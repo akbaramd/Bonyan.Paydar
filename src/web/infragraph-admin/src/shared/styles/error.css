@@ -1,0 +1,3 @@
+.fatal-error{min-height:100vh;padding:clamp(20px,5vw,70px);background:var(--ig-canvas);color:var(--ig-text);display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:14px;line-height:1.8;}
+.fatal-error h1{font-size:var(--ig-font-size-xl);margin:0}.fatal-error p{color:var(--ig-text-muted);max-width:620px;}
+.fatal-error button{min-height:44px;background:var(--ig-brand);color:var(--ig-brand-on);border:1px solid var(--ig-brand);border-radius:var(--ig-radius-md);padding:0 18px;}

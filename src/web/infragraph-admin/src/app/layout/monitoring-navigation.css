@@ -1,0 +1,40 @@
+/* Structured Zabbix-like monitoring sidebar, native RTL and accessible disclosure controls. */
+.monitoring-nav {display:flex;flex-direction:column;gap:5px;min-width:0;padding:0 10px;}
+.monitoring-nav .nav-section-label {font:700 9px var(--ig-font-mono);letter-spacing:1.4px;color:var(--ig-text-subtle);
+  padding:10px 12px 6px;direction:ltr;text-align:right;}
+.monitoring-nav .nav-section-label--secondary{margin-top:12px;border-top:1px solid var(--ig-border);padding-top:18px;}
+.monitoring-nav .nav-section-toggle {display:flex;align-items:center;gap:10px;min-height:42px;width:100%;
+  background:transparent;color:var(--ig-text-muted);border:1px solid transparent;border-radius:6px;
+  text-align:right;padding:0 12px;font-size:12px;cursor:pointer;}
+.monitoring-nav .nav-section-toggle strong{font-size:12px;font-weight:740;}
+.monitoring-nav .nav-section-toggle:hover,.monitoring-nav .nav-section-toggle--current{
+  background:var(--ig-surface-raised);color:var(--ig-text);}
+.monitoring-nav .nav-section-toggle--current>svg:first-child {color:var(--ig-brand);}
+.monitoring-nav .nav-section-chevron {margin-inline-start:auto;transition:transform .16s;flex-shrink:0;}
+.monitoring-nav .nav-section-chevron--closed {transform:rotate(90deg);}
+.monitoring-nav .nav-submenu {margin:0 5px 6px 6px;padding:4px 7px 4px 0;display:flex;flex-direction:column;gap:2px;
+  border-inline-start:1px solid var(--ig-border);}
+.monitoring-nav .nav-link.monitoring-subitem {position:relative;min-height:37px;display:flex;align-items:center;gap:10px;
+  padding:7px 13px;border:1px solid transparent;border-radius:5px;font-size:11.5px;font-weight:550;
+  white-space:normal;line-height:1.65;}
+.monitoring-nav .nav-link.monitoring-subitem:hover {background:var(--ig-surface-hover);color:var(--ig-text);}
+.monitoring-nav .nav-link.monitoring-subitem.nav-link--active{
+  background:var(--ig-brand-soft);border-color:color-mix(in srgb,var(--ig-brand) 20%,var(--ig-border));
+  color:var(--ig-brand);font-weight:740;}
+.monitoring-nav .nav-link.monitoring-subitem.nav-link--active::before {position:absolute;content:'';
+  top:6px;bottom:6px;inset-inline-start:-9px;width:3px;border-radius:3px;background:var(--ig-brand);}
+.monitoring-nav .nav-link.monitoring-subitem svg {color:var(--ig-text-subtle);flex-shrink:0;}
+.monitoring-nav .nav-link.monitoring-subitem.nav-link--active svg {color:var(--ig-brand);}
+.sidebar-desktop {overflow-y:auto;scrollbar-width:thin;}
+.sidebar-desktop .sidebar-footer{margin-top:auto;}
+.mobile-nav-drawer .monitoring-nav {padding:4px 12px 28px;}
+@media(pointer:coarse){
+ .monitoring-nav .nav-link.monitoring-subitem {min-height:46px;}
+ .monitoring-nav .nav-section-toggle {min-height:48px;}
+}
+@media(prefers-reduced-motion:reduce){.monitoring-nav .nav-section-chevron {transition:none;}}
+@media(max-width:590px){
+  .app-root .app-header{padding-inline:6px;gap:3px;}
+  .app-root .header-actions{gap:2px;}
+  .app-root .server-status{padding:5px;}
+}

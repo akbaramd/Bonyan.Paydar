@@ -1,0 +1,141 @@
+/* InfraGraph topology workstation: a dense operational canvas, not a marketing visualization. */
+.topology-page{max-width:none;}
+.topology-heading{margin-block-end:18px;}
+.topology-summary{display:flex;align-items:center;gap:19px;flex-wrap:wrap;min-height:42px;padding:10px 18px;background:var(--ig-surface);border:1px solid var(--ig-border);border-radius:var(--ig-radius-md) var(--ig-radius-md) 0 0;color:var(--ig-text-muted);font-size:var(--ig-font-size-sm);border-block-end:0;}
+.topology-summary>span{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;}
+.topology-summary b{color:var(--ig-text);font-size:13px;}
+.topology-summary-divider{width:1px;height:18px;background:var(--ig-border);}
+.topology-summary-end{margin-inline-start:auto;color:var(--ig-text-subtle);font-size:var(--ig-font-size-xs);gap:6px;}
+.summary-dot{width:8px;height:8px;display:inline-block;flex-shrink:0;border-radius:50%;background:var(--ig-unknown);}
+.summary-dot--healthy{background:var(--ig-success)}.summary-dot--warning{background:var(--ig-warning)}.summary-dot--critical{background:var(--ig-danger)}.summary-dot--unknown{background:var(--ig-unknown)}
+.topology-workspace{display:grid;grid-template-columns:minmax(0,1fr) 310px;min-height:675px;gap:0;border:1px solid var(--ig-border);border-radius:0 0 var(--ig-radius-lg) var(--ig-radius-lg);overflow:hidden;background:var(--ig-surface);}
+.topology-main{min-width:0;display:flex;flex-direction:column;}
+.topology-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:11px 13px;border-block-end:1px solid var(--ig-border);background:var(--ig-surface);}
+.topology-toolbar-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0;}
+.topology-toolbar-row--end{margin-inline-start:auto;}
+.ig-segmented{display:flex;align-items:center;gap:2px;padding:3px;border:1px solid var(--ig-border);border-radius:var(--ig-radius-md);background:var(--ig-canvas);}
+.ig-segmented button{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:var(--ig-radius-sm);background:transparent;color:var(--ig-text-muted);height:32px;padding:0 12px;white-space:nowrap;}
+.ig-segmented button:hover{color:var(--ig-text);}
+.ig-segmented button[data-state="on"]{background:var(--ig-surface-raised);box-shadow:0 1px 3px #0002;color:var(--ig-text);font-weight:700;}
+.ig-control-select,.topology-search{display:inline-flex;align-items:center;gap:8px;height:38px;border:1px solid var(--ig-border);background:var(--ig-surface-raised);color:var(--ig-text-muted);border-radius:var(--ig-radius-md);padding:0 11px;min-width:145px;}
+.ig-control-select{justify-content:space-between;cursor:pointer;}
+.select-chevron{font-size:16px;}
+.ig-control-select-menu{z-index:200;min-width:165px;background:var(--ig-surface-raised);border:1px solid var(--ig-border-strong);border-radius:var(--ig-radius-md);box-shadow:0 12px 35px #0005;overflow:hidden;padding:5px;}
+.ig-control-option{position:relative;padding:9px 32px 9px 12px;outline:none;border-radius:var(--ig-radius-sm);font-size:12px;color:var(--ig-text);cursor:pointer;}
+.ig-control-option[data-highlighted]{background:var(--ig-brand-soft);color:var(--ig-brand);}
+.select-check{position:absolute;inset-inline-start:11px;color:var(--ig-brand);}
+.topology-search{min-width:160px;width:210px;}
+.topology-search svg{flex-shrink:0;color:var(--ig-text-subtle)}
+.topology-search input{min-width:0;width:100%;border:0;outline:none;background:transparent;color:var(--ig-text);font:inherit;}
+.topology-search:focus-within{outline:2px solid var(--ig-focus);outline-offset:1px;}
+.topology-search input::placeholder{color:var(--ig-text-subtle)}
+.topology-note{display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--ig-brand-soft);color:var(--ig-text-muted);border-block-end:1px solid var(--ig-border);font-size:var(--ig-font-size-xs);line-height:1.7;}
+.topology-note--error{background:var(--ig-danger-soft);color:var(--ig-danger);}
+.topology-file{font-size:var(--ig-font-size-xs);display:flex;align-items:center;gap:7px;padding:7px 14px;background:var(--ig-surface-raised);color:var(--ig-text-muted);border-block-end:1px solid var(--ig-border);}
+.topology-stage{height:clamp(550px,67vh,800px);min-height:550px;flex:none;position:relative;overflow:hidden;background:
+radial-gradient(circle at 50% 43%,color-mix(in srgb,var(--ig-brand-soft) 35%,transparent),transparent 75%),
+var(--ig-canvas);}
+.topology-stage-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:24px;color:var(--ig-text-subtle);text-align:center;}
+.topology-stage-empty h2{color:var(--ig-text);font-size:18px;margin-block:20px 0;}
+.topology-stage-empty p{max-width:490px;line-height:1.85;font-size:13px;}
+.topology-demo-watermark{position:absolute;inset-inline-start:16px;inset-block-start:14px;pointer-events:none;z-index:5;border:1px solid var(--ig-warning);color:var(--ig-warning);background:var(--ig-warning-soft);border-radius:var(--ig-radius-sm);font:700 10px var(--ig-font-mono);padding:7px 10px;letter-spacing:1px;opacity:.94;}
+.topology-statusbar{display:flex;align-items:center;gap:17px;flex-wrap:wrap;min-height:38px;padding:8px 15px;border-block-start:1px solid var(--ig-border);background:var(--ig-surface);font-size:var(--ig-font-size-xs);color:var(--ig-text-muted);}
+.topology-statusbar>span{display:flex;gap:6px;align-items:center;}
+.topology-statusbar-help{margin-inline-start:auto;color:var(--ig-text-subtle);}
+.topology-caption{color:var(--ig-text-subtle);font-size:var(--ig-font-size-xs);line-height:1.85;padding-block-start:12px;}
+/* React Flow canvas / SVG edge styling */
+.ig-network-flow{position:absolute;inset:0;height:100%;width:100%;color:var(--ig-text);background:transparent;}
+.ig-network-flow .react-flow__pane{cursor:grab;}
+.ig-network-flow .react-flow__pane:active{cursor:grabbing;}
+.ig-network-flow .react-flow__background{color:var(--ig-border);}
+.ig-network-flow .react-flow__edge-path{stroke:var(--ig-border-strong);stroke-width:1.8;}
+.ig-network-flow .ig-edge--critical .react-flow__edge-path{stroke:var(--ig-danger);stroke-width:2.5;stroke-dasharray:5 5;}
+.ig-network-flow .react-flow__edge-text{font:10px var(--ig-font-mono);fill:var(--ig-text-subtle);}
+.ig-network-flow .react-flow__edge-textbg{fill:var(--ig-canvas);}
+.ig-network-flow .react-flow__node{width:auto;border:0;cursor:pointer;}
+.ig-network-flow .react-flow__node:focus-visible .network-node{outline:2px solid var(--ig-focus);outline-offset:3px;}
+.ig-network-flow .react-flow__handle{height:5px;width:5px;min-width:5px;min-height:5px;border:1px solid var(--ig-border-strong);background:var(--ig-surface);visibility:hidden;}
+.network-node{width:213px;min-height:88px;display:flex;align-items:center;gap:10px;padding:11px 12px;background:var(--ig-surface);border:1px solid var(--ig-border-strong);border-radius:var(--ig-radius-md);box-shadow:0 7px 18px #0003;position:relative;transition:border-color .12s,box-shadow .12s,opacity .12s;text-align:start;}
+.network-node--selected{border-color:var(--ig-brand);box-shadow:0 0 0 2px color-mix(in srgb,var(--ig-brand) 42%,transparent),0 10px 25px #0005;}
+.network-node--critical{border-color:var(--ig-danger);background:color-mix(in srgb,var(--ig-danger-soft) 24%,var(--ig-surface));}
+.network-node--warning{border-color:var(--ig-warning);}
+.network-node--unknown{border-style:dashed;}
+.network-node--dimmed{opacity:.3;}
+.network-node-icon{flex-shrink:0;display:grid;place-items:center;width:38px;height:38px;border-radius:7px;background:var(--ig-brand-soft);color:var(--ig-brand);}
+.network-node--critical .network-node-icon{background:var(--ig-danger-soft);color:var(--ig-danger);}
+.network-node--warning .network-node-icon{background:var(--ig-warning-soft);color:var(--ig-warning);}
+.network-node--unknown .network-node-icon{background:var(--ig-unknown-soft);color:var(--ig-unknown);}
+.network-node-body{display:flex;flex-direction:column;gap:2px;min-width:0;line-height:1.45;}
+.network-node-body strong{font:700 12px/1.4 var(--ig-font-mono);direction:ltr;align-self:flex-start;color:var(--ig-text);white-space:nowrap;}
+.network-node-body>span{color:var(--ig-text-muted);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:126px;}
+.network-node-body small{color:var(--ig-text-subtle);font:10px var(--ig-font-mono);direction:ltr;align-self:flex-start;}
+.network-node-led{position:absolute;inset-inline-end:10px;inset-block-start:10px;width:7px;height:7px;border-radius:50%;background:var(--ig-unknown);}
+.network-node-led--healthy{background:var(--ig-success)}.network-node-led--warning{background:var(--ig-warning)}.network-node-led--critical{background:var(--ig-danger)}.network-node-led--unknown{background:var(--ig-unknown)}
+.ig-flow-minimap{background:var(--ig-surface)!important;border:1px solid var(--ig-border)!important;border-radius:var(--ig-radius-md);box-shadow:0 5px 15px #0003;width:154px!important;height:100px!important;overflow:hidden;}
+.ig-flow-minimap svg{background:var(--ig-surface);}
+.ig-flow-controls{background:var(--ig-surface)!important;border:1px solid var(--ig-border)!important;box-shadow:0 5px 15px #0003!important;border-radius:var(--ig-radius-md)!important;overflow:hidden;}
+.ig-flow-controls button{background:var(--ig-surface)!important;color:var(--ig-text-muted)!important;border-block-end:1px solid var(--ig-border)!important;width:31px!important;height:31px!important;}
+.ig-flow-controls button svg{fill:currentColor!important;max-width:14px;}
+.ig-flow-controls button:hover{color:var(--ig-brand)!important;background:var(--ig-surface-raised)!important;}
+.ig-canvas-quicktools{display:flex;align-items:center;gap:4px;margin:12px!important;padding:5px;background:var(--ig-surface);border:1px solid var(--ig-border);box-shadow:0 7px 18px #0003;border-radius:var(--ig-radius-md);}
+.ig-canvas-quicktools .ig-button{width:31px;min-width:31px;min-height:31px;height:31px;}
+.quicktools-divider{height:22px;width:1px;background:var(--ig-border);margin-inline:3px;}
+ .react-flow__attribution{opacity:.75;font:10px var(--ig-font-mono);background:transparent!important;color:var(--ig-text-subtle)!important;inset-block-end:40px!important;inset-inline-end:12px!important;}
+.react-flow__attribution a{display:inline-flex;align-items:center;min-height:28px;padding:7px 10px;border:1px solid var(--ig-border);border-radius:4px;background:var(--ig-surface);color:var(--ig-text-muted)!important;text-decoration:none;}
+.react-flow__attribution a:hover{text-decoration:underline;color:var(--ig-brand)!important;}
+.blueprint-node{height:870px;width:1280px;opacity:.15;pointer-events:none;border:1px dashed var(--ig-border-strong);}
+.blueprint-node img{width:100%;height:100%;object-fit:contain;pointer-events:none;}
+.ig-network-flow .react-flow__node-blueprint{z-index:-1!important;pointer-events:none;}
+/* Desktop right-hand inspector (inline); tablet presents the same contents in Radix Dialog. */
+.topology-inspector{min-width:0;min-height:100%;display:flex;flex-direction:column;border-inline-start:1px solid var(--ig-border);background:var(--ig-surface);overflow:auto;}
+.inspector-topbar{display:flex;align-items:center;justify-content:space-between;min-height:52px;padding:0 17px;border-block-end:1px solid var(--ig-border);font-weight:700;font-size:13px;}
+.inspector-placeholder-status{font:10px var(--ig-font-mono);color:var(--ig-text-subtle);}
+.inspector-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;color:var(--ig-text-subtle);padding:24px;}
+.inspector-empty-icon{width:70px;height:70px;border-radius:50%;background:var(--ig-surface-raised);display:grid;place-items:center;color:var(--ig-brand);}
+.inspector-empty strong{color:var(--ig-text);font-size:14px;}
+.inspector-empty p{font-size:12px;line-height:1.9;margin:0;}
+.inspector-device-head{display:flex;align-items:center;gap:11px;padding:22px 17px 12px;}
+.inspector-kind-icon{width:45px;height:45px;display:grid;place-items:center;border:1px solid var(--ig-border);border-radius:8px;background:var(--ig-brand-soft);color:var(--ig-brand);}
+.inspector-overline{font:10px var(--ig-font-mono);letter-spacing:1px;color:var(--ig-text-subtle);}
+.inspector-device-head h2{font:700 17px var(--ig-font-mono);margin:3px 0;color:var(--ig-text);text-align:left;}
+.inspector-device-head p{margin:3px 0;color:var(--ig-text-muted);font-size:12px;}
+.inspector-status-row{padding:2px 17px 17px;border-block-end:1px solid var(--ig-border);}
+.inspector-section{padding:18px 17px;border-block-end:1px solid var(--ig-border);}
+.inspector-section-heading{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:700;color:var(--ig-text);margin-block-end:14px;}
+.inspector-section-heading svg{color:var(--ig-text-subtle);}
+.inspector-dl{margin:0;}
+.inspector-dl>div{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-block:8px;font-size:11px;}
+.inspector-dl dt{color:var(--ig-text-subtle);white-space:nowrap;}
+.inspector-dl dd{margin:0;color:var(--ig-text);text-align:end;min-width:0;max-width:180px;overflow-wrap:anywhere;}
+.inspector-ip{display:flex;align-items:center;gap:3px;}
+.inspector-ip .ig-button{width:27px;height:27px;min-height:27px;min-width:27px;}
+.inspector-copy-msg{font-size:11px;color:var(--ig-success);margin:3px 0;}
+.inspector-note{font-size:12px;line-height:1.85;color:var(--ig-text-muted);margin:0;}
+.inspector-evidence{display:flex;gap:9px;color:var(--ig-warning);background:var(--ig-warning-soft);padding:10px;border-radius:6px;font-size:11px;line-height:1.9;}
+.inspector-evidence svg{flex-shrink:0;margin-block-start:3px;}
+.inspector-footer{display:flex;align-items:center;gap:8px;padding:14px 17px;margin-block-start:auto;font-size:11px;line-height:1.8;color:var(--ig-text-subtle);}
+.topology-inspector-drawer{position:fixed;inset-block:0;inset-inline-start:0;z-index:125;width:min(90vw,370px);background:var(--ig-surface);border-inline-end:1px solid var(--ig-border);box-shadow:0 20px 50px #0007;overflow-y:auto;}
+.topology-inspector-drawer .topology-inspector{border:0;min-height:100vh;}
+@media (max-width:1280px){.topology-workspace{grid-template-columns:minmax(0,1fr) 280px;}.topology-toolbar-row--end{margin-inline-start:0;}}
+@media (max-width:980px){.topology-workspace{display:block;}.topology-summary{gap:13px;}.topology-stage{height:clamp(540px,75vh,820px)}}
+@media (max-width:680px){.topology-toolbar{padding:10px;}.topology-toolbar-row{width:100%;}.topology-search{flex:1;width:auto;}.ig-control-select{min-width:128px;}.topology-statusbar-help{width:100%;margin-inline-start:0;}.topology-summary-end{width:100%;margin-inline-start:0;}.topology-stage{height:65vh;min-height:480px;}.ig-flow-minimap{width:105px!important;height:75px!important;}.ig-canvas-quicktools{margin:7px!important;gap:1px;}}
+@media (pointer:coarse){.ig-segmented button,.ig-control-select,.topology-search{min-height:44px;height:44px}.ig-canvas-quicktools .ig-button{min-width:44px;width:44px;min-height:44px;height:44px}.ig-flow-controls button{height:44px!important;width:44px!important;}}
+/* Workstation splitter: keyboard-accessible, hit-testable, and independent of graph panning. */
+.topology-workspace{display:block;height:clamp(650px,80vh,950px);min-height:650px}
+.topology-panel-group{display:flex;width:100%;height:100%;min-width:0}
+.topology-panel-group [data-panel]{min-width:0;min-height:0}
+.topology-panel-group .topology-main{height:100%}
+.topology-panel-group .topology-stage{height:auto;min-height:0;flex:1}
+.topology-panel-group .topology-inspector{height:100%;min-height:0;border-inline-start:0}
+.topology-resize-handle{position:relative;flex:0 0 8px;background:var(--ig-surface);border-inline:1px solid var(--ig-border);touch-action:none;cursor:col-resize;outline-offset:-2px;z-index:6}
+.topology-resize-handle::after{content:"";position:absolute;top:calc(50% - 22px);left:calc(50% - 1px);width:2px;height:44px;border-radius:2px;background:var(--ig-border-strong)}
+.topology-resize-handle:hover,.topology-resize-handle:focus-visible,.topology-resize-handle[data-resize-handle-active]{background:var(--ig-brand-soft);outline:2px solid var(--ig-focus)}
+@media (max-width:980px){
+  .topology-workspace{height:auto;min-height:0}
+  .topology-workspace .topology-main{min-height:0}
+  .topology-workspace .topology-stage{height:clamp(490px,64vh,760px);min-height:490px;flex:none}
+}
+/* Constant-size zoom readout in the workstation toolbar. */
+.ig-zoom-level{display:inline-flex;min-width:48px;height:31px;align-items:center;justify-content:center;color:var(--ig-text-muted);font-size:11px;border-inline-start:1px solid var(--ig-border);padding-inline:9px}
+/* Keep the minimap away from the left-side critical access branch on narrow displays. */
+@media (max-width:980px){.ig-flow-minimap{left:auto!important;right:14px!important}}

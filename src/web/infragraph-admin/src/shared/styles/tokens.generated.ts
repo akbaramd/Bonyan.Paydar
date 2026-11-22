@@ -1,0 +1,96 @@
+// Generated from design-tokens/tokens.json.
+export const themes = {
+  "dark": {
+    "canvas": "#0b1220",
+    "surface": "#121e30",
+    "surfaceRaised": "#19273b",
+    "surfaceHover": "#22344a",
+    "border": "#344760",
+    "borderStrong": "#496580",
+    "text": "#eef5fd",
+    "textMuted": "#b1c5dc",
+    "textSubtle": "#91a9c5",
+    "brand": "#65c6f4",
+    "brandHover": "#99dcff",
+    "brandSoft": "#153c54",
+    "brandOn": "#071d2b",
+    "success": "#6ee0b3",
+    "successSoft": "#153e34",
+    "warning": "#f2c477",
+    "warningSoft": "#4b3825",
+    "danger": "#ff929e",
+    "dangerSoft": "#502b37",
+    "unknown": "#a5b7cd",
+    "unknownSoft": "#29394c",
+    "focus": "#8ed9fa",
+    "overlay": "rgba(4, 10, 18, .72)",
+    "topologyGrid": "#283b50",
+    "selectionRing": "#65c6f4",
+    "toolbarSurface": "#141f30"
+  },
+  "light": {
+    "canvas": "#f1f5fa",
+    "surface": "#ffffff",
+    "surfaceRaised": "#e9f0f8",
+    "surfaceHover": "#e2edf5",
+    "border": "#cad7e5",
+    "borderStrong": "#a6bdd0",
+    "text": "#172435",
+    "textMuted": "#364e66",
+    "textSubtle": "#58728d",
+    "brand": "#075e8d",
+    "brandHover": "#034d75",
+    "brandSoft": "#dceef8",
+    "brandOn": "#ffffff",
+    "success": "#0a7253",
+    "successSoft": "#d6f6e8",
+    "warning": "#855100",
+    "warningSoft": "#fff0d6",
+    "danger": "#ac2337",
+    "dangerSoft": "#ffe5e8",
+    "unknown": "#536a82",
+    "unknownSoft": "#e6edf4",
+    "focus": "#036aa1",
+    "overlay": "rgba(16, 28, 43, .50)",
+    "topologyGrid": "#c9d7e4",
+    "selectionRing": "#075e8d",
+    "toolbarSurface": "#f7faff"
+  }
+} as const;
+export const coreTokens = {
+  "space": {
+    "0": 0,
+    "1": 4,
+    "2": 8,
+    "3": 12,
+    "4": 16,
+    "5": 20,
+    "6": 24,
+    "8": 32,
+    "10": 40,
+    "12": 48
+  },
+  "radius": {
+    "sm": 4,
+    "md": 6,
+    "lg": 8,
+    "xl": 10,
+    "pill": 999
+  },
+  "fontSize": {
+    "xs": 11,
+    "sm": 12,
+    "base": 13,
+    "md": 14,
+    "lg": 16,
+    "xl": 20,
+    "heading": 26
+  },
+  "layout": {
+    "sidebar": 244,
+    "topbar": 58,
+    "touchTarget": 44,
+    "compactRow": 40,
+    "comfortableRow": 48
+  }
+} as const;

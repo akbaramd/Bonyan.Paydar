@@ -1,0 +1,11 @@
+.inspector-link-evidence{min-width:0}
+.inspector-link-list{display:flex;flex-direction:column;gap:9px}
+.inspector-link-card{display:flex;flex-direction:column;gap:9px;padding:11px;border:1px solid var(--ig-border);border-radius:7px;background:var(--ig-canvas);min-width:0}
+.inspector-link-top{display:flex;justify-content:space-between;align-items:start;gap:8px}
+.inspector-link-top strong{font-size:12px;overflow-wrap:anywhere}
+.inspector-link-tag{flex:none;display:inline-flex;align-items:center;padding:4px 6px;border:1px solid var(--ig-border-strong);color:var(--ig-text-muted);border-radius:4px;font-size:10px}
+.inspector-link-tag--lldp{border-color:var(--ig-brand);color:var(--ig-brand)}
+.inspector-link-ports{display:flex;gap:9px;flex-wrap:wrap;font-size:10px;line-height:1.8}
+.inspector-link-ports>span{display:flex;gap:5px;flex-wrap:wrap;color:var(--ig-text-muted)}
+.inspector-link-ports code{color:var(--ig-text);font-family:var(--ig-font-mono);font-size:10px}
+.inspector-link-card small,.inspector-link-empty{color:var(--ig-text-muted);font-size:11px;line-height:1.9;margin:0}

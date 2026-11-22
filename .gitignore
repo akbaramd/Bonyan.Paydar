@@ -1,0 +1,52 @@
+# Secrets / local configuration
+.env
+.env.*
+!.env.example
+*.pfx
+*.p12
+*.pem
+*.key
+secrets/
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vs/
+.vscode/
+# Build / cache (language-neutral and common)
+bin/
+obj/
+node_modules/
+dist/
+build/
+coverage/
+TestResults/
+.pytest_cache/
+__pycache__/
+.venv/
+*.log
+*.tmp
+# Local project data / generated results
+research/experiments/.local/
+resources/sample-data/.local/
+
+infra/local/_publish/
+**/*.user
+**/*.suo
+.vsconfig.local
+# Host interface inventory must stay local.
+infra/local/host-scopes.json
+infra/local/snmp-targets.json
+# Local release artifacts
+artifacts/
+
+
+# Embed at build time only
+src/agents/Paydar.Agent.Setup/payload.zip
+
+
+# Test runner output (never source)
+**/test-results*/
+**/playwright-report/
+**/.playwright/
+

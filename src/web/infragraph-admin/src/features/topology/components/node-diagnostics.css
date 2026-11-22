@@ -1,0 +1,38 @@
+.node-context-anchor{position:fixed;width:1px;height:1px;padding:0;border:0;opacity:0;pointer-events:none;z-index:1}
+.node-context-content{z-index:1400;min-width:232px;max-width:300px;padding:7px;color:var(--ig-text);background:var(--ig-surface-raised);border:1px solid var(--ig-border-strong);border-radius:8px;box-shadow:0 12px 35px #0008;direction:rtl;outline:0}
+.node-context-heading{padding:11px 9px;display:flex;flex-direction:column;gap:4px;border-bottom:1px solid var(--ig-border);margin-bottom:4px}
+.node-context-heading strong{font-size:13px}.node-context-heading small{color:var(--ig-text-muted);font-size:11px}
+.node-context-item{display:flex;align-items:center;gap:10px;border-radius:5px;padding:9px 10px;min-height:38px;font-size:12px;cursor:default;outline:0}
+.node-context-item[data-highlighted]{background:var(--ig-brand-soft);color:var(--ig-brand)}
+.node-context-item[data-disabled]{opacity:.43;cursor:not-allowed}
+.node-context-separator{height:1px;background:var(--ig-border);margin:5px 4px}
+.node-context-note{font-size:10px;line-height:1.8;padding:6px 10px;color:var(--ig-text-muted);margin:0}
+.node-diagnostics{display:flex;flex-direction:column;gap:14px;padding:15px;min-width:0;font-size:12px}
+.node-diagnostics-heading{display:flex;align-items:start;gap:9px;justify-content:space-between;min-width:0}
+.node-diagnostics-heading>div{display:flex;flex-direction:column;gap:5px;min-width:0}
+.node-diagnostics-heading strong{font-size:15px;overflow-wrap:anywhere}
+.node-diagnostics-heading small{font:10px var(--ig-font-mono);color:var(--ig-text-muted)}
+.node-diagnostics-heading code{font-size:12px;color:var(--ig-brand)}
+.node-diagnostics-heading>span{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--ig-text-muted);white-space:nowrap}
+.node-diagnostics-options{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.node-diagnostics-options button{display:flex;justify-content:center;align-items:center;gap:7px;min-height:38px;border:1px solid var(--ig-border);color:var(--ig-text);background:var(--ig-canvas);border-radius:5px}
+.node-diagnostics-options button[aria-pressed=true]{background:var(--ig-brand-soft);border-color:var(--ig-brand);color:var(--ig-brand);font-weight:700}
+.node-diagnostics-policy{display:flex;align-items:start;gap:8px;padding:12px;color:var(--ig-text-muted);border:1px solid var(--ig-border);border-radius:6px;background:var(--ig-surface-raised)}
+.node-diagnostics-policy svg{flex:none;margin-top:3px}.node-diagnostics-policy p{margin:0;line-height:1.85;font-size:11px}
+.node-diagnostics-approval{display:flex;align-items:flex-start;gap:8px;line-height:1.7;font-size:11px}
+.node-diagnostics-approval input{margin-top:4px;accent-color:var(--ig-brand)}
+.node-diagnostics-run{border:0;min-height:38px;border-radius:5px;background:var(--ig-brand);color:#fff;font-weight:700}
+.node-diagnostics-run:disabled{opacity:.45;cursor:not-allowed}
+.node-diagnostics-error,.node-diagnostics-warning{font-size:11px;line-height:1.9;color:var(--ig-danger);margin:0}
+.node-diagnostics-progress{display:flex;align-items:center;gap:8px;color:var(--ig-text-muted);font-size:11px}
+.node-diagnostics-result{min-width:0;border:1px solid var(--ig-border);border-radius:6px;overflow:hidden}
+.node-diagnostics-result-head{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:12px;background:var(--ig-surface-raised)}
+.node-diagnostics-result-head time{font-size:10px;color:var(--ig-text-muted);margin-inline-start:auto}
+.node-diagnostics-summary{display:flex;flex-wrap:wrap;gap:9px;padding:12px;font-size:11px}
+.node-diagnostics-summary span{display:flex;flex-direction:column;gap:3px;min-width:105px}
+.node-diagnostics-table-wrap{max-width:100%;overflow-x:auto}
+.node-diagnostics-table-wrap table{width:100%;min-width:350px;border-collapse:collapse;font-size:10px;text-align:right}
+.node-diagnostics-table-wrap th,.node-diagnostics-table-wrap td{padding:8px 9px;border-top:1px solid var(--ig-border);white-space:nowrap}
+.node-diagnostics-table-wrap th{background:var(--ig-surface-raised)}
+.node-diagnostics-interpretation{font-size:10px;line-height:1.8;padding:12px;color:var(--ig-text-muted);margin:0}
+.node-diagnostics-empty{display:flex;align-items:center;gap:10px;color:var(--ig-text-muted);padding:16px;font-size:11px;line-height:1.8}

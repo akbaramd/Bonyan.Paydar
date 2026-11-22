@@ -1,0 +1,198 @@
+/* InfraGraph v1.3 — topology-first NOC workspace
+   Device silhouette = identity; badge/color = state; edges = evidence/inference.
+   Controls float above SVG viewport, command overflow is scalable.
+*/
+.topology-page--studio .topology-main{position:relative;height:100%;min-height:0}
+.topology-page--studio .topology-stage{flex:1;min-height:0;height:auto;isolation:isolate;overflow:hidden;background:var(--ig-canvas)}
+.topology-page--studio .topology-toolbar{position:absolute;z-index:15;top:14px;right:15px;left:auto;display:block;
+  width:max-content;max-width:calc(100% - 30px);min-height:0;height:auto;padding:6px 7px;overflow:visible;
+  border:1px solid var(--ig-border-strong);border-radius:9px;background:var(--ig-surface);
+  box-shadow:0 9px 26px #0005}
+.studio-primary-actions{display:flex;align-items:center;gap:5px;max-width:100%}
+.topology-page--studio .topology-search{width:215px;min-width:110px;height:34px;margin-inline:0;background:var(--ig-surface-raised)}
+.topology-page--studio .ig-control-select{height:34px;min-width:118px}
+.topology-page--studio .topology-toolbar .ig-button{min-height:34px;font-size:11px}
+.studio-filter-select{height:34px;min-width:112px;border:1px solid var(--ig-border);border-radius:6px;background:var(--ig-surface-raised);color:var(--ig-text);font:11px Vazirmatn, sans-serif;padding:0 8px}
+.studio-filter-select:focus-visible{outline:2px solid var(--ig-focus);outline-offset:2px}
+.studio-action-menu{z-index:210;min-width:230px;max-height:min(75vh,530px);overflow-y:auto;padding:6px;
+  border:1px solid var(--ig-border-strong);border-radius:9px;background:var(--ig-surface);color:var(--ig-text);
+  box-shadow:0 20px 48px #0008;direction:rtl}
+.studio-action-heading{font-size:10px;font-weight:750;color:var(--ig-text-subtle);padding:9px 11px 5px}
+.studio-action-item{display:flex;align-items:center;gap:12px;padding:10px 11px;border-radius:5px;cursor:pointer;outline:none;font-size:12px;min-height:38px}
+.studio-action-item svg{color:var(--ig-text-muted);flex-shrink:0}
+.studio-action-item[data-highlighted]{background:var(--ig-brand-soft);color:var(--ig-brand)}
+.studio-action-item[data-disabled]{opacity:.42;cursor:not-allowed}
+.studio-action-separator{height:1px;background:var(--ig-border);margin:6px 4px}
+.topology-page--studio .ig-canvas-quicktools{position:absolute;bottom:12px;left:12px;right:auto;top:auto;width:max-content;max-width:180px;display:flex;direction:ltr;gap:3px;padding:5px;margin:0!important;
+  border-radius:8px;border:1px solid var(--ig-border-strong);background:var(--ig-surface);box-shadow:0 8px 24px #0005;z-index:4}
+.topology-page--studio .ig-flow-minimap{left:auto!important;right:14px!important;bottom:13px!important;width:152px!important;height:96px!important;opacity:.82}
+.topology-page--studio .topology-statusbar{position:absolute;bottom:12px;right:190px;z-index:7;max-width:calc(100% - 440px);
+  display:flex;align-items:center;gap:10px;min-height:30px;padding:5px 9px;background:var(--ig-surface);
+  border:1px solid var(--ig-border-strong);border-radius:6px;box-shadow:0 6px 18px #0003;font-size:10px}
+.topology-page--studio .topology-statusbar-help{display:none}
+.topology-page--studio .topology-demo-watermark{position:absolute;top:67px;right:19px;z-index:7;
+  font-size:9px;padding:4px 8px;background:var(--ig-warning-soft);pointer-events:none}
+.topology-page--studio .studio-view-label{position:absolute;bottom:112px;right:16px;z-index:4;
+  color:var(--ig-text-subtle);font:9px var(--ig-font-mono);letter-spacing:.4px;direction:ltr;pointer-events:none}
+.topology-page--studio .studio-fault-card{position:absolute;top:17px;left:17px;z-index:8;width:285px;max-width:calc(100% - 34px);
+  border:1px solid color-mix(in srgb,var(--ig-warning) 48%,var(--ig-border));border-inline-start:3px solid var(--ig-warning);
+  border-radius:7px;padding:10px 13px;background:var(--ig-surface);box-shadow:0 7px 24px #0005}
+.studio-fault-flag{display:flex;align-items:center;gap:7px;color:var(--ig-warning);font-size:11px;font-weight:780}
+.studio-fault-flag>span{margin-inline-start:auto;font:9px var(--ig-font-mono);color:var(--ig-text-subtle)}
+.studio-fault-summary{display:flex;flex-direction:column;gap:4px;margin-top:9px;line-height:1.65}
+.studio-fault-summary strong{align-self:flex-start;font:700 13px var(--ig-font-mono);color:var(--ig-text)}
+.studio-fault-summary>span{font-size:10px;color:var(--ig-text-muted)}
+.studio-fault-card button{margin-top:7px;display:block;background:none;border:0;padding:5px 0;
+  color:var(--ig-brand);font-size:11px;font-weight:750;text-align:start;cursor:pointer}
+.studio-fault-card button:hover{text-decoration:underline}
+.topology-page--studio .studio-appbar{height:55px;padding-inline:16px}
+.topology-page--studio .studio-identity h1{font-size:15px}
+.topology-page--studio .studio-appbar-actions .ig-button--sm{min-height:34px}
+.topology-page--studio .studio-footer{min-height:24px;height:24px}
+.topology-page--studio .topology-inspector-drawer{width:min(92vw,418px);max-width:100%;inset-inline-start:0;inset-inline-end:auto;
+  background:var(--ig-surface);box-shadow:0 18px 55px #0008;z-index:140;overflow-y:auto}
+.topology-page--studio .topology-inspector-drawer .topology-inspector{height:auto;min-height:100%;max-height:none;overflow:visible}
+.inspector-kind-icon--equipment{width:70px;height:70px;padding:5px;display:grid;place-items:center;border:1px solid var(--ig-border-strong);
+  border-radius:9px;background:var(--ig-canvas);color:var(--ig-brand)}
+.inspector-kind-icon--equipment svg{max-width:58px;max-height:58px}
+.inspector-hypothesis{margin:13px 15px;padding:12px;border:1px solid color-mix(in srgb,var(--ig-warning) 45%,var(--ig-border));
+  border-radius:8px;background:var(--ig-warning-soft)}
+.inspector-hypothesis>div{display:flex;gap:8px;align-items:center;color:var(--ig-warning);font-size:11px}
+.inspector-hypothesis p{font-size:11px;line-height:1.85;margin:7px 0 0;color:var(--ig-text-muted)}
+
+/* Equipment nodes: no enclosing identical rectangle. Own SVG silhouettes make
+ * network roles visible before a click; status is independently encoded. */
+.ig-network-flow .network-node--equipment{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  width:168px;min-height:148px;height:auto;padding:2px 3px;gap:3px;
+  background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0;
+  color:var(--ig-text);text-align:center;outline:0;transition:opacity .15s ease}
+.ig-network-flow .react-flow__node:hover .network-node--equipment{transform:none!important;box-shadow:none!important}
+.ig-network-flow .react-flow__node:focus-visible .network-node--equipment,
+.ig-network-flow .network-node--equipment.network-node--selected{outline:0}
+.ig-network-flow .network-node--equipment.network-node--selected .network-equipment-glyph,
+.ig-network-flow .react-flow__node:focus-visible .network-equipment-glyph{outline:2px solid var(--ig-focus);outline-offset:4px}
+.network-equipment-glyph{position:relative;display:grid;place-items:center;width:88px;height:73px;flex-shrink:0;color:var(--ig-brand);
+  filter:drop-shadow(0 4px 4px #0002);border-radius:11px}
+.network-equipment-glyph svg{width:70px;max-height:66px;transition:transform .16s ease;overflow:visible}
+.react-flow__node:hover .network-equipment-glyph svg{transform:translateY(-2px)}
+.network-node--workstation .network-equipment-glyph{color:var(--ig-text-muted)}
+.network-node--switch .network-equipment-glyph{color:var(--ig-brand)}
+.network-node--firewall .network-equipment-glyph{color:var(--ig-warning)}
+.network-node--server .network-equipment-glyph{color:var(--ig-brand)}
+.network-node--wireless .network-equipment-glyph{color:var(--ig-brand)}
+.network-node--internet .network-equipment-glyph{color:var(--ig-text-muted)}
+.network-node--collector .network-equipment-glyph{width:89px;height:76px;color:var(--ig-brand);background:var(--ig-brand-soft);
+  border:1px solid color-mix(in srgb,var(--ig-brand) 35%,var(--ig-border));border-radius:15px}
+.network-node--critical .network-equipment-glyph{color:var(--ig-danger)}
+.network-node--unknown .network-equipment-glyph{opacity:.72}
+.network-equipment-indicator{position:absolute;right:2px;bottom:5px;width:13px;height:13px;border-radius:50%;
+  background:var(--ig-unknown);border:3px solid var(--ig-canvas);box-sizing:content-box}
+.network-equipment-indicator--healthy{background:var(--ig-success)}
+.network-equipment-indicator--warning{background:var(--ig-warning)}
+.network-equipment-indicator--critical{background:var(--ig-danger)}
+.network-equipment-indicator--unknown{background:var(--ig-unknown);border-radius:3px;transform:rotate(45deg);width:9px;height:9px}
+.network-equipment-caption{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;max-width:168px;line-height:1.35}
+.network-equipment-caption strong{max-width:162px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font:700 11px var(--ig-font-mono);color:var(--ig-text);direction:ltr}
+.network-equipment-kind{color:var(--ig-text-muted);font-size:10px;font-weight:630;white-space:nowrap}
+.network-equipment-state{display:inline-flex;align-items:center;justify-content:center;min-height:17px;
+  font-size:9px;font-weight:750;letter-spacing:0;padding:1px 7px;border-radius:3px;border:1px solid var(--ig-border);
+  background:var(--ig-surface);color:var(--ig-text-muted)}
+.network-equipment-state--critical{color:var(--ig-danger);border-color:var(--ig-danger);background:var(--ig-danger-soft)}
+.network-equipment-state--warning{color:var(--ig-warning);border-color:color-mix(in srgb,var(--ig-warning) 40%,var(--ig-border));background:var(--ig-warning-soft)}
+.network-equipment-state--unknown{border-style:dashed;color:var(--ig-text-muted)}
+.network-equipment-state--healthy{color:var(--ig-success)}
+.network-equipment-impact{margin-top:1px;max-width:168px;display:inline-flex;padding:2px 5px;
+  background:var(--ig-danger-soft);color:var(--ig-danger);font-size:8px;font-weight:730;line-height:1.4;white-space:nowrap;border-radius:3px}
+.network-node--possible-child .network-equipment-kind{border-bottom:1px dashed var(--ig-warning)}
+.network-node--critical .network-equipment-glyph::before{content:"";position:absolute;inset:0;border:1px solid color-mix(in srgb,var(--ig-danger) 40%,transparent);
+  border-radius:12px;background:var(--ig-danger-soft);opacity:.5;z-index:-1}
+.ig-network-flow .ig-signal-edge--suspected .react-flow__edge-path{stroke:var(--ig-warning);stroke-width:2;stroke-dasharray:5 5}
+.ig-network-flow .ig-signal-edge--route .react-flow__edge-path{stroke:var(--ig-brand);stroke-width:3}
+.ig-network-flow .ig-canvas-quicktools .ig-button{min-width:31px;min-height:31px}
+@media (max-width:1150px){
+  .topology-page--studio .topology-toolbar{max-width:calc(100% - 22px);right:11px;top:10px}
+  .topology-page--studio .topology-search{width:180px}
+  .topology-page--studio .studio-fault-card{top:68px;left:11px;width:250px;padding:9px 11px}
+  .topology-page--studio .topology-demo-watermark{top:65px}
+  .topology-page--studio .topology-statusbar{right:164px;max-width:calc(100% - 325px)}
+}
+@media (max-width:820px){
+  .topology-page--studio .topology-toolbar{right:8px;left:8px;max-width:none;width:auto;padding:5px}
+  .studio-primary-actions{width:100%;justify-content:flex-start}
+  .topology-page--studio .topology-search{width:auto;flex:1;min-width:110px}
+  .topology-page--studio .studio-filter-select{display:none}
+  .topology-page--studio .ig-control-select{display:none}
+  .topology-page--studio .studio-fault-card{top:68px;left:9px;width:min(250px,calc(100% - 18px))}
+  .topology-page--studio .topology-statusbar{bottom:12px;right:114px;max-width:calc(100% - 295px);gap:6px}
+  .topology-page--studio .ig-flow-minimap{width:102px!important;height:75px!important;right:8px!important}
+  .topology-page--studio .ig-canvas-quicktools{margin:8px!important}
+  .topology-page--studio .topology-demo-watermark{top:61px;right:10px}
+}
+@media (max-width:580px){
+  .topology-page--studio .topology-toolbar .ig-button span:not(.ig-zoom-level){font-size:0}
+  .topology-page--studio .topology-toolbar .ig-button{gap:2px;padding-inline:6px}
+  .topology-page--studio .topology-search{min-width:90px}
+  .topology-page--studio .topology-statusbar{right:8px;bottom:95px;max-width:calc(100% - 16px);min-height:28px}
+  .topology-page--studio .studio-fault-card{top:58px;left:8px;width:230px;padding:8px}
+  .topology-page--studio .studio-fault-summary span{font-size:9px}
+  .topology-page--studio .topology-demo-watermark{display:none}
+}
+@media (pointer:coarse){
+  .topology-page--studio .topology-toolbar .ig-button{min-width:42px;min-height:42px}
+  .topology-page--studio .topology-search,.topology-page--studio .ig-control-select,.studio-filter-select{height:42px}
+}
+@media (prefers-reduced-motion:reduce){
+  .network-equipment-glyph svg,.ig-network-flow .network-node--equipment{transition:none!important}
+  .react-flow__node:hover .network-equipment-glyph svg{transform:none}
+}
+/* Critical: the badge must never stretch across the SVG graph, even under RTL inset rules. */
+.topology-page--studio .topology-demo-watermark{
+  position:absolute!important;display:inline-flex!important;align-items:center!important;
+  width:max-content!important;height:max-content!important;max-width:190px!important;
+  inset:auto 16px auto auto!important;top:68px!important;right:16px!important;
+  z-index:7!important;pointer-events:none!important;
+}
+.topology-inspector-drawer{width:min(92vw,418px)!important;max-width:100%;inset-inline-start:0;
+  background:var(--ig-surface);border-inline-end:1px solid var(--ig-border);z-index:140;
+  box-shadow:0 18px 55px #0008}
+/* Readable captions even when the initial incident graph is fitted at <100%. */
+.topology-page--studio .ig-node-kind{font-size:11px}
+.topology-page--studio .ig-node-name{font-size:12px}
+.topology-page--studio .ig-node-state-label{font-size:10px}
+/* Fit small screens by narrowing the TB layout's graph nodes—not by shrinking typography. */
+.topology-page--studio .network-node--vertical{width:120px;max-width:120px}
+.topology-page--studio .network-node--vertical .ig-node-name{max-width:118px}
+/* Explicit-scope active discovery, integrated into the single React topology workspace. */
+.scan-panel { flex: 0 0 auto; background: var(--surface-raised, #18202c);
+  border: 1px solid var(--border-default, #394351); border-radius: 9px;
+  padding: 12px 16px; margin: 0 0 8px; color: inherit; max-height: 310px; overflow: auto; }
+.scan-panel-heading { display:flex; gap:16px; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; }
+.scan-panel-heading strong { font-size: 14px; }
+.scan-panel p, .scan-panel small { margin:4px 0; font-size:12px; line-height:1.6; }
+.scan-panel-controls {display:flex; gap:10px; align-items:end; flex-wrap:wrap; margin:9px 0;}
+.scan-panel-controls label {display:flex; flex-direction:column; font-size:12px; gap:4px;}
+.scan-panel-controls input {width:190px; min-height:30px; padding:4px 8px; color:inherit;
+ background:var(--surface-base, #111827);border:1px solid var(--border-default, #394351);border-radius:5px;}
+.scan-panel-controls input[type=number] {width:95px;}
+.scan-panel-controls label.scan-approval {flex-direction:row; align-items:center; max-width:240px;}
+.scan-panel-controls .scan-approval input {width:auto; min-height:auto;}
+.scan-panel-controls button {min-height:32px;padding:4px 12px; border-radius:6px;
+ background:var(--color-primary, #2e6dcc);color:white;border:1px solid transparent;cursor:pointer;}
+.scan-panel-controls button:disabled {opacity:.55;cursor:not-allowed;}
+.scan-panel-controls button.scan-stop {background:var(--surface-base, #202d3c);border-color:var(--border-default,#4a586e);}
+.scan-stream {font-size:11px; border-radius:999px; padding:3px 8px;
+ border:1px solid var(--border-default,#4a586e);}
+.scan-stream--connected {border-color:#389b6f;}
+.scan-progress {margin:7px 0;display:flex;flex-direction:column;gap:5px;font-size:12px;}
+.scan-progress progress {width:100%;height:8px;}
+.scan-feed {max-height:96px;overflow:auto;display:flex;flex-direction:column;gap:3px;font-size:12px;}
+.scan-feed div {display:flex;gap:10px;align-items:center;}
+.scan-feed code {font-family:monospace;direction:ltr;}
+.scan-feed time {font-variant-numeric:tabular-nums;opacity:.7;}
+.scan-caveat {display:block;opacity:.75;}
+@media (max-width:750px) {
+ .scan-panel {max-height:280px;padding:9px;}
+ .scan-panel-controls input {width:155px;}
+ .scan-panel-heading {gap:4px;}
+}

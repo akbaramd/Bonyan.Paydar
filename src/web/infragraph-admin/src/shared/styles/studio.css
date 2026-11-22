@@ -1,0 +1,393 @@
+/* InfraGraph Network Operations Studio — dedicated full-workspace operations surface.
+ * Design language: NOC desktop, strong information hierarchy, measured motion.
+ * Domain views must never impersonate live network collection.
+ */
+.topology-studio-shell,.topology-studio-main{width:100%;min-width:0;min-height:100dvh}
+.topology-studio-main{display:flex}
+.topology-page--studio{flex:1;display:flex;flex-direction:column;width:100%;min-width:0;height:100dvh;min-height:0;overflow:hidden;background:var(--ig-canvas)}
+.studio-appbar{height:62px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 20px;background:var(--ig-surface);border-bottom:1px solid var(--ig-border)}
+.studio-appbar-heading,.studio-appbar-actions{display:flex;align-items:center;gap:11px;min-width:0}
+.studio-appbar-actions{margin-inline-start:auto;flex-shrink:0;gap:7px}
+.studio-exit{width:36px;height:36px;display:grid;place-items:center;border:1px solid var(--ig-border);border-radius:7px;color:var(--ig-text-muted);transition:background .16s,color .16s}
+.studio-exit:hover{background:var(--ig-surface-hover);color:var(--ig-text)}
+.studio-brandmark{display:grid;place-items:center;width:34px;height:34px;border-radius:7px;color:var(--ig-brand);background:var(--ig-brand-soft);border:1px solid color-mix(in srgb,var(--ig-brand) 24%,var(--ig-border))}
+.studio-identity{min-width:0;display:flex;flex-direction:column;gap:3px}
+.studio-identity h1{font-size:16px;line-height:1.3;font-weight:800;white-space:nowrap;margin:0}
+.studio-identity>span{font:9px/1.3 var(--ig-font-mono);letter-spacing:.8px;color:var(--ig-text-subtle);white-space:nowrap;direction:ltr;text-align:right}
+.studio-appbar-divider{width:1px;height:28px;flex-shrink:0;background:var(--ig-border);margin-inline:6px}
+.studio-workspace-label{font-size:12px;font-weight:650;color:var(--ig-text-muted);white-space:nowrap}
+.studio-appbar-actions .ig-badge{white-space:nowrap}
+.studio-infobar{display:flex;align-items:center;min-height:57px;flex:0 0 auto;gap:17px;padding:7px 17px;background:var(--ig-surface-raised);border-block-end:1px solid var(--ig-border)}
+.studio-infobar-title{display:flex;align-items:center;gap:9px;color:var(--ig-warning);min-width:0;white-space:nowrap}
+.studio-infobar-title strong{color:var(--ig-text);font-size:12px}
+.studio-infobar-title>span{font-size:11px;color:var(--ig-text-subtle);overflow:hidden;text-overflow:ellipsis}
+.studio-infobar-metrics{display:flex;align-items:center;gap:4px;margin-inline-start:auto}
+.studio-infobar-metrics button{display:flex;align-items:center;gap:6px;min-height:37px;padding:0 11px;border:1px solid transparent;border-radius:5px;background:transparent;color:var(--ig-text-muted);white-space:nowrap;font-size:11px;transition:background .15s,border-color .15s}
+.studio-infobar-metrics button b{font-size:15px;color:var(--ig-text)}
+.studio-infobar-metrics button:hover{background:var(--ig-surface-hover)}
+.studio-infobar-metrics button.studio-metric--active{background:var(--ig-surface);border-color:var(--ig-border-strong)}
+.studio-infobar-metrics .summary-dot{width:7px;height:7px}
+.studio-infobar-actions{display:flex;align-items:center;gap:3px;padding-inline-start:13px;border-inline-start:1px solid var(--ig-border)}
+.studio-infobar-actions .ig-button{white-space:nowrap;font-size:11px}
+.topology-page--studio .topology-workspace{flex:1;display:block;height:auto;min-height:0;width:100%;border:0;border-radius:0;overflow:hidden}
+.topology-page--studio .topology-panel-group{height:100%;width:100%}
+.topology-page--studio .topology-main{height:100%;min-height:0;min-width:0;width:100%;display:flex;flex-direction:column}
+.topology-page--studio .topology-toolbar{flex:0 0 auto;min-height:56px;display:flex;align-items:center;gap:7px;padding:8px 12px;flex-wrap:wrap;background:var(--ig-surface);border-block-end:1px solid var(--ig-border)}
+.topology-page--studio .topology-toolbar-row{gap:5px}
+.topology-page--studio .topology-toolbar-row--end{margin-inline-start:auto}
+.topology-page--studio .ig-segmented{padding:2px}
+.topology-page--studio .ig-segmented button{height:33px;padding-inline:10px;font-size:11px}
+.topology-page--studio .topology-search{width:205px;min-width:155px;height:36px;padding-inline:10px;background:var(--ig-canvas)}
+.topology-page--studio .ig-control-select{height:36px;min-width:138px;background:var(--ig-canvas);font-size:11px}
+.topology-page--studio .topology-toolbar .ig-button{white-space:nowrap}
+.studio-toolbar-divider{display:block;width:1px;height:23px;flex-shrink:0;background:var(--ig-border);margin-inline:5px}
+.topology-page--studio .topology-stage{position:relative;flex:1;min-height:140px;height:auto;overflow:hidden;background:var(--ig-canvas)}
+.topology-page--studio .topology-stage::after{position:absolute;inset:0;pointer-events:none;content:"";background:radial-gradient(ellipse at center,transparent 50%,rgba(1,7,13,.06) 100%);z-index:1}
+.topology-page--studio .topology-statusbar{min-height:31px;padding:5px 13px;gap:15px;flex-shrink:0;font-size:10px;background:var(--ig-surface-raised)}
+.topology-page--studio .topology-statusbar-help{font-size:10px}
+.topology-page--studio .topology-demo-watermark{font-size:9px;top:12px;right:14px;left:auto;inset-inline-start:auto;z-index:5;padding:5px 8px;pointer-events:none}
+.topology-page--studio .topology-inspector{height:100%;min-height:0;background:var(--ig-surface);border-inline-start:0}
+.topology-page--studio .topology-panel-group [data-panel]{min-height:0}
+.topology-page--studio .topology-panel-group .topology-stage{flex:1;min-height:0}
+.topology-page--studio .topology-resize-handle{flex-basis:7px}
+.studio-footer{height:26px;min-height:26px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 15px;border-block-start:1px solid var(--ig-border);background:var(--ig-surface);color:var(--ig-text-subtle);font-size:10px}
+.studio-footer>span:first-child{display:flex;gap:7px;align-items:center}
+.studio-footer .summary-dot{width:7px;height:7px}
+/* Intentional graph states: high-contrast borders instead of decoration. */
+.ig-network-flow .ig-signal-edge .react-flow__edge-path{stroke:var(--ig-border-strong);stroke-width:1.8;transition:stroke .15s,opacity .15s}
+.ig-network-flow .ig-signal-edge--route .react-flow__edge-path{stroke:var(--ig-brand);stroke-width:3}
+.ig-network-flow .ig-signal-edge--muted .react-flow__edge-path{opacity:.17}
+.ig-network-flow .ig-signal-edge--request .react-flow__edge-path{stroke:var(--ig-brand);stroke-width:3}
+.ig-network-flow .ig-signal-edge--reply .react-flow__edge-path{stroke:var(--ig-success);stroke-width:3}
+.ig-network-flow .ig-signal-edge--timeout .react-flow__edge-path{stroke:var(--ig-danger);stroke-dasharray:5 5;stroke-width:3}
+.ig-network-flow .ig-edge--critical .react-flow__edge-path{stroke:var(--ig-danger);stroke-dasharray:6 5}
+.ig-signal-label{font:10px var(--ig-font-mono);paint-order:stroke;stroke:var(--ig-canvas);stroke-width:4px;stroke-linejoin:round;fill:var(--ig-text-subtle);pointer-events:none}
+.ig-signal-packet{fill:var(--ig-brand);stroke:var(--ig-canvas);stroke-width:2;filter:drop-shadow(0 0 3px var(--ig-brand));pointer-events:none}
+.ig-signal-packet--reply{fill:var(--ig-success);filter:drop-shadow(0 0 3px var(--ig-success))}
+.ig-signal-timeout{fill:var(--ig-danger);opacity:.8;stroke:var(--ig-canvas);stroke-width:2;pointer-events:none}
+.network-node--route{border-color:var(--ig-brand)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--ig-brand) 25%,transparent),0 6px 16px #0003}
+.network-node--probe-request{border-color:var(--ig-brand)!important}
+.network-node--probe-reply{border-color:var(--ig-success)!important}
+.network-node--probe-timeout{border-color:var(--ig-danger)!important}
+.network-node--dimmed{opacity:.22}
+.network-node{transition:border-color .16s,box-shadow .16s,opacity .18s,transform .16s}
+.ig-network-flow .react-flow__node:hover .network-node:not(.network-node--dimmed){box-shadow:0 6px 22px #0005;border-color:var(--ig-brand);transform:translateY(-1px)}
+.studio-stage-route-hint{position:absolute;top:12px;left:14px;z-index:7;display:flex;align-items:center;gap:9px;padding:7px 10px;border:1px solid var(--ig-brand);background:var(--ig-surface);border-radius:5px;color:var(--ig-brand);font-size:10px}
+/* Asset explorer is a context panel inside the studio, not the application nav. */
+.studio-explorer{position:absolute;top:53px;right:14px;bottom:14px;z-index:8;display:flex;flex-direction:column;width:min(308px,calc(100% - 28px));max-height:calc(100% - 70px);border:1px solid var(--ig-border-strong);border-radius:8px;background:var(--ig-surface);box-shadow:0 14px 45px #0007;overflow:hidden}
+.studio-explorer-header{min-height:60px;padding:10px 12px 10px 15px;border-bottom:1px solid var(--ig-border);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.studio-explorer-header>div{display:flex;flex-direction:column;gap:5px}
+.studio-explorer-header strong{font-size:13px}
+.studio-overline{color:var(--ig-text-subtle);font:9px var(--ig-font-mono);letter-spacing:1px}
+.studio-explorer-summary{display:flex;align-items:center;gap:6px;padding:10px 13px;font-size:11px;color:var(--ig-text-muted);background:var(--ig-surface-raised);border-bottom:1px solid var(--ig-border)}
+.studio-explorer-summary span{margin-inline-start:auto;color:var(--ig-warning);font-size:10px}
+.studio-explorer-list{flex:1;min-height:0;overflow:auto;padding:7px}
+.studio-explorer-item{width:100%;min-height:53px;display:flex;align-items:center;gap:9px;text-align:right;color:var(--ig-text-muted);border:1px solid transparent;border-radius:5px;background:transparent;padding:6px 9px}
+.studio-explorer-item:hover,.studio-explorer-item--selected{background:var(--ig-brand-soft);border-color:var(--ig-border)}
+.studio-explorer-item>span:nth-child(2){display:flex;flex-direction:column;gap:3px;min-width:0}
+.studio-explorer-item strong{font:700 11px var(--ig-font-mono);color:var(--ig-text)}
+.studio-explorer-item small{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
+.studio-explorer-ip{font:9px var(--ig-font-mono);margin-inline-start:auto;white-space:nowrap;color:var(--ig-text-subtle)}
+.studio-explorer footer{font-size:10px;color:var(--ig-text-subtle);padding:10px 13px;border-top:1px solid var(--ig-border)}
+.studio-explorer-empty{font-size:12px;text-align:center;color:var(--ig-text-muted)}
+/* Dock: deterministic replay transport, progress, counters, and forensic logical path. */
+.studio-dock{flex:0 0 181px;min-height:0;background:var(--ig-surface);border-top:1px solid var(--ig-border);overflow:hidden}
+.studio-dock-tabs{height:100%;min-height:0;display:flex;flex-direction:column}
+.studio-dock-header{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:40px;padding-inline:12px;border-block-end:1px solid var(--ig-border);background:var(--ig-surface-raised)}
+.studio-dock-tablist{display:flex;align-items:center;gap:5px;min-height:40px}
+.studio-dock-tablist button{position:relative;display:flex;align-items:center;gap:7px;white-space:nowrap;height:39px;border:0;background:transparent;padding-inline:12px;color:var(--ig-text-subtle);font-size:11px}
+.studio-dock-tablist button:hover{color:var(--ig-text)}
+.studio-dock-tablist button[data-state="active"]{color:var(--ig-brand);font-weight:700}
+.studio-dock-tablist button[data-state="active"]::after{content:"";position:absolute;inset-block-end:0;inset-inline:7px;height:2px;background:var(--ig-brand);border-radius:2px}
+.studio-dock-header-end{display:flex;align-items:center;gap:10px;color:var(--ig-text-subtle);font:10px var(--ig-font-mono)}
+.studio-dock-header-end>span{display:flex;align-items:center;gap:7px}
+.studio-dock-content{min-height:0;flex:1}
+.studio-dock-probe{display:flex;flex-direction:column}
+.studio-probe-actions{display:flex;align-items:center;gap:4px;height:47px;padding:6px 12px;border-bottom:1px solid var(--ig-border)}
+.studio-probe-actions .ig-button--icon{width:29px;height:29px;min-width:29px;min-height:29px}
+.studio-dock-action-divider{width:1px;height:20px;background:var(--ig-border);margin-inline:6px}
+.studio-speed{display:flex;align-items:center;gap:7px;margin-inline-start:8px;color:var(--ig-text-subtle);font-size:10px}
+.studio-speed select{border:1px solid var(--ig-border);background:var(--ig-surface-raised);color:var(--ig-text);border-radius:4px;padding:4px 7px;font:10px var(--ig-font-mono);direction:ltr}
+.studio-probe-main{display:flex;align-items:stretch;flex:1;min-height:0}
+.studio-probe-transport{flex:1;min-width:0;padding:12px 14px}
+.studio-probe-transport-head{display:flex;justify-content:space-between;gap:10px;font-size:11px}
+.studio-probe-transport-head strong{font-weight:700;color:var(--ig-text)}
+.studio-probe-transport-head .numeric{color:var(--ig-text-subtle)}
+.studio-progress-track{margin-block:11px;height:4px;border-radius:4px;background:var(--ig-border);overflow:hidden}
+.studio-progress-track>span{display:block;height:100%;background:var(--ig-brand);border-radius:4px;transition:width .18s ease}
+.studio-probe-description{font-size:10px;color:var(--ig-text-subtle);display:flex;align-items:center;gap:6px;min-width:0;flex-wrap:wrap}
+.studio-probe-description [dir="ltr"]{font-family:var(--ig-font-mono);color:var(--ig-text-muted)}
+.studio-probe-metrics{display:grid;grid-template-columns:repeat(3,minmax(57px,1fr));align-items:stretch;min-width:230px;border-inline:1px solid var(--ig-border)}
+.studio-probe-metrics>div{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;border-inline-end:1px solid var(--ig-border)}
+.studio-probe-metrics>div:last-child{border:0}
+.studio-probe-metrics span{font-size:10px;color:var(--ig-text-subtle)}
+.studio-probe-metrics b{font-size:17px;color:var(--ig-text)}
+.studio-probe-recent{width:min(31%,280px);padding:5px 10px;display:flex;flex-direction:column;justify-content:center;gap:5px;min-width:160px}
+.studio-probe-log{display:flex;align-items:center;gap:7px;font-size:10px;color:var(--ig-text-muted);white-space:nowrap;overflow:hidden}
+.studio-probe-log svg{flex-shrink:0;color:var(--ig-brand)}
+.studio-probe-log--reply svg{color:var(--ig-success)}
+.studio-probe-log--timeout svg{color:var(--ig-danger)}
+.studio-probe-log code{margin-inline-start:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:10px var(--ig-font-mono);color:var(--ig-text-subtle)}
+.studio-probe-quiet{display:flex;align-items:center;gap:7px;color:var(--ig-text-subtle);font-size:11px}
+.studio-path-content{padding:12px 15px;overflow:auto}
+.studio-path-controls{display:flex;align-items:end;gap:9px;flex-wrap:wrap}
+.studio-device-select{display:flex;flex-direction:column;gap:6px;min-width:154px}
+.studio-device-select>label{font-size:10px;color:var(--ig-text-subtle)}
+.studio-select-trigger{display:flex;align-items:center;justify-content:space-between;gap:10px;width:180px;min-height:32px;padding:5px 10px;color:var(--ig-text);background:var(--ig-surface-raised);border:1px solid var(--ig-border);border-radius:5px;font:11px var(--ig-font-mono)}
+.studio-select-menu{z-index:180;background:var(--ig-surface-raised);border:1px solid var(--ig-border-strong);border-radius:7px;padding:5px;box-shadow:0 12px 40px #0007;min-width:200px;max-height:min(60vh,320px);overflow:auto}
+.studio-select-option{display:flex;align-items:center;justify-content:space-between;gap:12px;border-radius:4px;padding:9px 10px;color:var(--ig-text);font-size:11px;outline:none}
+.studio-select-option[data-highlighted]{background:var(--ig-brand-soft);color:var(--ig-brand)}
+.studio-select-option [dir="ltr"]{font:11px var(--ig-font-mono)}
+.studio-select-option small{font-size:10px;color:var(--ig-text-subtle);margin-inline-start:7px}
+.studio-path-arrows{color:var(--ig-text-subtle);margin-block-end:7px}
+.studio-path-result{margin-top:11px;font-size:10px;color:var(--ig-text-muted);min-width:0}
+.studio-path-result>strong{color:var(--ig-text);font-size:11px}
+.studio-path-result p{margin:6px 0 0;line-height:1.5}
+.studio-path-result .studio-path-risk{color:var(--ig-warning)}
+.studio-path-chips{display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin-top:5px}
+.studio-path-chips>span{display:flex;align-items:center;gap:5px}
+.studio-path-chips code{font:10px var(--ig-font-mono);color:var(--ig-brand)}
+.studio-path-arrow{color:var(--ig-text-subtle)}
+/* Popover + accessible shortcut dialog. */
+.studio-layer-popover{z-index:170;width:min(360px,93vw);padding:15px 18px;background:var(--ig-surface);border:1px solid var(--ig-border-strong);border-radius:8px;box-shadow:0 16px 45px #0007}
+.studio-popover-head{display:flex;align-items:center;justify-content:space-between;margin-block-end:7px}
+.studio-popover-head strong{font-size:13px}
+.studio-popover-head span{font:9px var(--ig-font-mono);color:var(--ig-text-subtle)}
+.studio-layer-popover .ig-choice-row{min-height:54px}
+.studio-help-dialog{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:150;background:var(--ig-surface);color:var(--ig-text);border:1px solid var(--ig-border-strong);border-radius:10px;width:min(92vw,555px);padding:23px;box-shadow:0 24px 60px #0008}
+.studio-help-title{display:flex;align-items:flex-start;gap:12px;padding-bottom:16px;border-bottom:1px solid var(--ig-border);color:var(--ig-brand)}
+.studio-help-title>div{flex:1;color:var(--ig-text)}
+.studio-help-title h2{font-size:16px;margin:0 0 5px}
+.studio-help-title p{font-size:11px;margin:0;color:var(--ig-text-muted);line-height:1.8}
+.studio-help-grid{padding-block:10px}
+.studio-help-grid>div{display:flex;justify-content:space-between;align-items:center;padding:7px 2px;border-bottom:1px solid var(--ig-border);font-size:12px}
+.studio-help-grid kbd{font:10px var(--ig-font-mono);border:1px solid var(--ig-border-strong);border-radius:4px;padding:5px 10px;background:var(--ig-surface-raised);color:var(--ig-text-muted)}
+.studio-help-disclaimer{display:flex;gap:10px;padding:12px;border-radius:6px;background:var(--ig-warning-soft);color:var(--ig-warning);font-size:11px;line-height:1.85}
+.studio-help-disclaimer svg{flex-shrink:0}
+.studio-help-actions{display:flex;justify-content:flex-end;margin-top:17px}
+/* Browser native fullscreen, and CSS fallback if denied by browser policy. */
+.topology-page--studio.topology-page--theater{position:fixed;inset:0;z-index:100;max-height:100dvh}
+:root:fullscreen .topology-page--studio{height:100dvh}
+@media (max-width:1450px){
+  .studio-workspace-label{display:none}
+  .studio-infobar-title>span{display:none}
+  .topology-page--studio .topology-toolbar{gap:5px}
+}
+@media (max-width:1190px){
+  .studio-infobar{gap:6px;padding-inline:10px}
+  .studio-infobar-actions .ig-button{padding-inline:6px}
+  .topology-page--studio .topology-toolbar-row{flex-wrap:wrap}
+  .topology-page--studio .topology-search{width:180px}
+  .studio-appbar{padding-inline:12px}
+}
+@media (max-width:980px){
+  .studio-appbar{height:58px;gap:6px}
+  .studio-appbar-actions{gap:4px}
+  .studio-identity>span{font-size:8px}
+  .studio-infobar{flex-wrap:wrap;gap:4px;min-height:83px;justify-content:space-between}
+  .studio-infobar-title{width:100%;font-size:11px}
+  .studio-infobar-title>span{display:inline;white-space:nowrap}
+  .studio-infobar-metrics{margin-inline-start:0}
+  .studio-infobar-metrics button{min-height:32px;padding-inline:8px}
+  .studio-infobar-actions{margin-inline-start:auto}
+  .studio-infobar-actions .studio-inspector-toggle{display:none}
+  .topology-page--studio .topology-toolbar{padding:7px 10px;min-height:56px}
+  .topology-page--studio .topology-stage{height:auto;min-height:0;flex:1}
+  .studio-dock{flex-basis:182px}
+  .topology-page--studio .topology-workspace{height:auto;min-height:0}
+  .ig-flow-minimap{left:auto!important;right:14px!important}
+  .studio-probe-recent{display:none}
+  .studio-probe-metrics{min-width:190px}
+}
+@media (max-width:680px){
+  .studio-appbar{height:55px;padding-inline:9px}
+  .studio-appbar-actions .ig-badge,.studio-appbar-divider,.studio-brandmark{display:none}
+  .studio-appbar-actions .ig-button--sm span{display:none}
+  .studio-identity h1{font-size:14px}
+  .studio-identity>span{font-size:7px}
+  .studio-infobar{gap:3px;padding:4px 8px;min-height:77px}
+  .studio-infobar-title>span{display:none}
+  .studio-infobar-metrics{width:100%;justify-content:space-between;order:2}
+  .studio-infobar-metrics button{min-height:28px;padding-inline:4px;font-size:10px}
+  .studio-infobar-metrics button b{font-size:12px}
+  .studio-infobar-actions{position:absolute;right:8px;top:54px;z-index:3;padding:0;border:0}
+  .studio-infobar-actions .ig-button{font-size:0;gap:0}
+  .studio-infobar-actions .ig-button svg{width:16px;height:16px}
+  .topology-page--studio .topology-toolbar{min-height:90px;align-content:center}
+  .topology-page--studio .topology-toolbar-row{width:100%;flex-wrap:nowrap}
+  .topology-page--studio .topology-toolbar-row--end{overflow:auto;scrollbar-width:thin}
+  .topology-page--studio .topology-toolbar-row--end .ig-button{flex-shrink:0}
+  .topology-page--studio .topology-search{flex:1;min-width:90px;width:auto}
+  .topology-page--studio .ig-control-select{min-width:112px}
+  .topology-page--studio .ig-segmented button{font-size:0;padding-inline:9px}
+  .topology-page--studio .ig-segmented button svg{width:16px;height:16px}
+  .topology-page--studio .topology-statusbar{gap:8px;padding:5px 8px}
+  .topology-page--studio .topology-statusbar-help{display:none}
+  .studio-dock{flex-basis:163px}
+  .studio-probe-main{min-width:0}
+  .studio-probe-transport{padding:8px}
+  .studio-probe-metrics{min-width:135px}
+  .studio-probe-metrics span{font-size:9px}
+  .studio-probe-metrics b{font-size:14px}
+  .studio-probe-actions{height:45px;gap:2px;padding:5px}
+  .studio-probe-actions .ig-button--sm{font-size:10px;padding-inline:7px}
+  .studio-dock-header{padding-inline:5px}
+  .studio-dock-tablist button{padding-inline:6px;font-size:10px}
+  .studio-speed{margin:0}
+  .studio-stage-route-hint{top:52px;left:8px}
+  .studio-footer>span:last-child{display:none}
+}
+@media (max-height:670px) and (min-width:681px){
+  .studio-dock{flex-basis:155px}
+  .studio-infobar{min-height:48px}
+  .topology-page--studio .topology-toolbar{min-height:47px}
+}
+@media (pointer:coarse){
+  .studio-exit,.studio-appbar-actions .ig-button--icon{min-width:44px;min-height:44px}
+  .studio-infobar-metrics button{min-height:40px}
+  .studio-explorer-item{min-height:52px}
+  .studio-dock-tablist button{min-height:44px;height:44px}
+  .studio-probe-actions .ig-button--icon{min-width:40px;min-height:40px;width:40px;height:40px}
+}
+@media (prefers-reduced-motion:reduce){
+  .studio-progress-track>span,.network-node,.studio-infobar-metrics button,.studio-exit{transition:none!important}
+  .ig-signal-packet{display:none}
+}
+
+/* v1.3 — operator-first canvas. Symbols are SVG; links remain React Flow SVG. */
+.topology-page--studio .topology-main{position:relative}
+.topology-page--studio .topology-toolbar{
+  position:absolute;top:12px;inset-inline-start:14px;right:auto;z-index:12;
+  width:max-content;max-width:calc(100% - 28px);min-height:0;
+  padding:6px;flex-wrap:nowrap;justify-content:flex-start;
+  border:1px solid var(--ig-border-strong);border-radius:10px;
+  box-shadow:0 12px 32px #0004;background:var(--ig-surface);
+}
+.topology-page--studio .topology-toolbar-row{
+  display:flex;align-items:center;gap:5px;min-width:0;width:100%;flex-wrap:nowrap;
+}
+.topology-page--studio .topology-toolbar-row .ig-button{flex-shrink:0}
+.topology-page--studio .topology-search{width:170px;min-width:125px;flex:0 1 170px}
+.topology-page--studio .ig-control-select{min-width:116px;max-width:146px}
+.topology-page--studio .topology-toolbar .ig-button{min-height:34px}
+.topology-page--studio .topology-stage{flex:1;min-height:0;background:var(--ig-canvas)}
+.topology-page--studio .studio-infobar{min-height:46px;gap:12px;padding:4px 14px}
+.topology-page--studio .studio-infobar-title>span{display:none}
+.topology-page--studio .studio-infobar-metrics button{min-height:32px}
+.topology-page--studio .studio-infobar-metrics button b{font-size:13px}
+.topology-page--studio .topology-demo-watermark{top:auto;bottom:14px;right:auto;left:15px;z-index:7}
+.topology-page--studio .ig-canvas-quicktools{margin:13px 13px 13px 13px!important;flex-direction:column;align-items:stretch}
+.topology-page--studio .ig-zoom-level{padding:7px 0;height:auto;border:0;border-top:1px solid var(--ig-border);min-width:34px}
+.topology-page--studio .ig-flow-minimap{left:auto!important;right:14px!important;bottom:14px!important}
+.topology-page--studio .network-node{
+  width:164px;height:102px;min-height:102px;display:flex;flex-direction:column;
+  align-items:center;justify-content:flex-start;gap:2px;padding:5px 2px 0;
+  border:1px solid transparent;border-radius:13px;background:transparent;
+  box-shadow:none;text-align:center;transition:opacity .15s,filter .15s;
+}
+.topology-page--studio .network-node:hover,
+.ig-network-flow .react-flow__node:hover .network-node:not(.network-node--dimmed){
+  transform:none;border:1px solid var(--ig-border-strong);box-shadow:none;background:var(--ig-surface);
+}
+.topology-page--studio .network-node--selected{
+  border:1px solid var(--ig-brand);box-shadow:0 0 0 2px var(--ig-brand-soft);background:var(--ig-surface)
+}
+.topology-page--studio .network-node--unknown{border-style:solid}
+.topology-page--studio .network-node--critical,
+.topology-page--studio .network-node--warning{background:transparent;border-color:transparent}
+.topology-page--studio .network-node--critical.network-node--selected,
+.topology-page--studio .network-node--warning.network-node--selected{background:var(--ig-surface);border-color:var(--ig-brand)}
+.ig-node-figure{
+  position:relative;display:grid;place-items:center;height:49px;width:69px;flex-shrink:0;
+  border-radius:11px;color:var(--ig-text-muted);background:color-mix(in srgb,var(--ig-surface-raised) 75%,transparent);
+}
+.ig-device-glyph{width:53px;height:53px;display:block;overflow:visible;filter:drop-shadow(0 3px 4px #0003)}
+.ig-device-glyph--workstation{width:45px;height:45px}
+.ig-device-glyph--switch{width:61px;height:61px}
+.ig-device-glyph--router{width:48px;height:48px}
+.ig-device-glyph--firewall{width:49px;height:49px}
+.network-node--control .ig-node-figure{color:var(--ig-brand);box-shadow:0 0 0 2px color-mix(in srgb,var(--ig-brand) 25%,transparent);background:var(--ig-brand-soft)}
+.network-node--firewall .ig-node-figure{color:var(--ig-text)}
+.network-node--switch .ig-node-figure{color:var(--ig-text)}
+.network-node--internet .ig-node-figure{color:var(--ig-brand)}
+.network-node--critical .ig-node-figure{color:var(--ig-danger);background:color-mix(in srgb,var(--ig-danger-soft) 75%,var(--ig-canvas))}
+.network-node--warning .ig-node-figure{color:var(--ig-warning)}
+.network-node--unknown .ig-node-figure{opacity:.65}
+.ig-node-state{position:absolute;top:0;right:0;width:12px;height:12px;border:2px solid var(--ig-canvas);border-radius:50%;background:var(--ig-unknown)}
+.ig-node-state--healthy{background:var(--ig-success)}
+.ig-node-state--warning{background:var(--ig-warning)}
+.ig-node-state--critical{background:var(--ig-danger);width:15px;height:15px}
+.ig-node-state--unknown{background:var(--ig-unknown)}
+.ig-node-kind{color:var(--ig-text-muted);font-size:10px;line-height:1.3;font-weight:650;white-space:nowrap}
+.ig-node-name{max-width:158px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:700 11px/1.35 var(--ig-font-mono);color:var(--ig-text);text-shadow:0 1px 2px var(--ig-canvas)}
+.network-node--control .ig-node-name{color:var(--ig-brand)}
+.ig-node-state-label{font-size:9px;line-height:1.3;font-weight:700;white-space:nowrap}
+.ig-node-state-label--critical{color:var(--ig-danger)}
+.ig-node-state-label--warning{color:var(--ig-warning)}
+.ig-node-state-label--unknown{color:var(--ig-text-subtle)}
+.ig-node-impact{
+  position:absolute;bottom:-7px;left:-18px;min-width:32px;height:20px;
+  display:grid;place-items:center;border:1px solid var(--ig-danger);
+  background:var(--ig-surface);border-radius:6px;
+  font:800 11px var(--ig-font-mono);color:var(--ig-danger)
+}
+.ig-network-flow .ig-signal-edge--unknown .react-flow__edge-path{
+  stroke-dasharray:3 6;stroke:var(--ig-unknown);opacity:.68;
+}
+.ig-network-flow .ig-signal-edge--route .react-flow__edge-path{stroke:var(--ig-brand);opacity:1}
+.ig-network-flow .ig-edge--critical .react-flow__edge-path{stroke:var(--ig-danger);stroke-dasharray:6 4}
+.studio-incident-card{
+  position:absolute;top:14px;left:14px;z-index:10;
+  display:flex;align-items:center;gap:10px;width:min(290px,calc(100% - 28px));
+  border:1px solid color-mix(in srgb,var(--ig-danger) 48%,var(--ig-border));
+  border-radius:9px;padding:10px;text-align:right;
+  background:var(--ig-surface);box-shadow:0 9px 24px #0003;
+  color:var(--ig-danger);cursor:pointer
+}
+.studio-incident-card>span{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.studio-incident-card strong{font-size:11px;color:var(--ig-text)}
+.studio-incident-card small{font:700 11px var(--ig-font-mono);color:var(--ig-danger)}
+.studio-incident-card em{font-size:10px;color:var(--ig-text-muted);font-style:normal;line-height:1.6}
+.studio-incident-card:hover,.studio-incident-card:focus-visible{outline:2px solid var(--ig-focus);outline-offset:1px}
+.studio-command-menu{
+  z-index:200;width:min(280px,calc(100vw - 22px));max-height:min(66dvh,480px);
+  padding:5px;border:1px solid var(--ig-border-strong);border-radius:10px;
+  box-shadow:0 18px 45px #0006;background:var(--ig-surface);overflow-y:auto;
+}
+.studio-command-group{padding:9px 10px 4px;font-size:10px;font-weight:700;color:var(--ig-text-subtle)}
+.studio-command-item{display:flex;align-items:center;gap:10px;min-height:38px;padding:7px 11px;
+  border-radius:5px;font-size:12px;color:var(--ig-text);cursor:pointer;outline:none}
+.studio-command-item svg{flex-shrink:0;color:var(--ig-brand)}
+.studio-command-item[data-highlighted]{background:var(--ig-brand-soft)}
+.studio-command-item[data-disabled]{opacity:.4;cursor:not-allowed}
+.studio-command-separator{height:1px;background:var(--ig-border);margin-block:6px}
+.topology-page--studio .topology-inspector-drawer{
+  width:min(430px,92vw);inset-inline-start:0;inset-inline-end:auto;
+  z-index:130;background:var(--ig-surface);box-shadow:0 0 65px #0007;
+}
+.topology-page--studio .topology-inspector-drawer .topology-inspector{height:100dvh;min-height:100dvh}
+.topology-page--studio .studio-infobar-actions{padding-inline-start:6px}
+@media(max-width:980px){
+  .topology-page--studio .topology-toolbar{top:9px;inset-inline-start:9px;max-width:calc(100% - 18px);min-height:0;padding:5px}
+  .topology-page--studio .topology-toolbar-row{flex-wrap:nowrap}
+  .topology-page--studio .topology-toolbar .ig-control-select{min-width:104px}
+  .topology-page--studio .topology-toolbar .topology-search{width:128px;min-width:80px;flex:1}
+  .topology-page--studio .topology-stage{flex:1;height:auto;min-height:0}
+  .studio-incident-card{top:75px;width:260px}
+  .topology-page--studio .studio-infobar{min-height:46px}
+}
+@media(max-width:700px){
+  .topology-page--studio .topology-toolbar{width:calc(100% - 18px);max-width:none;min-height:0}
+  .topology-page--studio .topology-toolbar .ig-control-select{display:none}
+  .topology-page--studio .topology-toolbar .studio-optional-label{display:none}
+  .topology-page--studio .topology-toolbar .topology-search{flex:1;min-width:65px}
+  .topology-page--studio .topology-toolbar-row .ig-segmented button{font-size:0}
+  .topology-page--studio .studio-infobar-actions{display:none}
+  .studio-incident-card{top:68px}
+  .topology-page--studio .topology-statusbar{gap:9px}
+  .topology-page--studio .topology-demo-watermark{bottom:12px}
+}
+@media(pointer:coarse){
+  .topology-page--studio .topology-toolbar .ig-button,.studio-command-item{min-height:44px}
+  .topology-page--studio .network-node{min-height:102px}
+}

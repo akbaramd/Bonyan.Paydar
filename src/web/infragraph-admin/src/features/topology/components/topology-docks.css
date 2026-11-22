@@ -1,0 +1,273 @@
+/* InfraGraph operator studio: persistent SVG work surface with IDE-style docked tools. */
+.ig-dock-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  direction: ltr;
+  background: var(--ig-canvas);
+}
+.ig-dock-frame .ig-dock-group { height: 100%; width: 100%; min-height: 0; min-width: 0; }
+.ig-dock-frame [data-panel] { min-height: 0; min-width: 0; overflow: hidden; }
+.ig-dock-center { width: 100%; height: 100%; min-height: 0; min-width: 0; overflow: hidden; }
+.ig-dock-frame .topology-main { height: 100%; width: 100%; min-height: 0; }
+.ig-dock-frame .topology-stage { height: 100% !important; min-height: 0 !important; flex: 1; overflow: hidden; }
+.ig-dock-frame .topology-stage::after { display: none; }
+.ig-dock-resizer { position: relative; flex: 0 0 6px; background: var(--ig-border); outline-offset: -2px; }
+.ig-dock-resizer::after { position: absolute; content: ''; background: var(--ig-text-subtle); opacity: 0; border-radius: 3px; }
+.ig-dock-resizer--vertical { cursor: col-resize; }
+.ig-dock-resizer--vertical::after { width: 3px; height: 44px; top: 50%; left: 1px; transform: translateY(-50%); }
+.ig-dock-resizer--horizontal { cursor: row-resize; }
+.ig-dock-resizer--horizontal::after { height: 3px; width: 56px; left: 50%; top: 1px; transform: translateX(-50%); }
+.ig-dock-resizer:hover::after, .ig-dock-resizer:focus-visible::after, .ig-dock-resizer[data-resize-handle-active]::after { opacity: 1; }
+.ig-dock-resizer:focus-visible { outline: 2px solid var(--ig-focus); }
+.ig-dock-pane { height: 100%; min-height: 0; min-width: 0; overflow: hidden; display: flex; flex-direction: column;
+  background: var(--ig-surface); color: var(--ig-text); border: 0; }
+.ig-dock-titlebar { min-height: 36px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 10px;
+  background: var(--ig-surface-raised); border-bottom: 1px solid var(--ig-border); }
+.ig-dock-titlebar strong { font-size: 11px; font-weight: 750; }
+.ig-dock-titlebar-name { font: 9px var(--ig-font-mono); color: var(--ig-text-subtle); opacity: .65; margin-inline-start: auto; }
+.ig-dock-close { height: 26px; width: 28px; display: grid; place-items: center; background: none; border: 0;
+  border-radius: 4px; color: var(--ig-text-muted); }
+.ig-dock-close:hover { color: var(--ig-text); background: var(--ig-brand-soft); }
+.ig-dock-scroll { min-height: 0; min-width: 0; flex: 1; overflow-x: hidden; overflow-y: auto; scrollbar-width: thin; }
+.ig-dock-scroll:has(.studio-dock) { display: flex; flex-direction: column; overflow: hidden; }
+.ig-dock-pane .ig-dock-message { font-size: 12px; line-height: 1.8; padding: 16px; color: var(--ig-text-muted); }
+.ig-dock-search { min-height: 43px; display: flex; align-items: center; gap: 9px; padding: 6px 10px;
+  border-bottom: 1px solid var(--ig-border); color: var(--ig-text-subtle); }
+.ig-dock-search input { width: 100%; min-width: 0; border: 1px solid var(--ig-border);
+  border-radius: 5px; height: 31px; background: var(--ig-canvas); color: var(--ig-text); padding: 4px 9px; }
+.ig-dock-fields { display: flex; flex-direction: column; gap: 16px; padding: 14px 12px; font-size: 12px; }
+.ig-dock-fields > label { display: flex; flex-direction: column; gap: 6px; color: var(--ig-text-muted); }
+.ig-dock-fields .studio-filter-select, .ig-dock-fields .access-site-input { width: 100%; min-width: 0; }
+.ig-dock-fields .ig-control-select { width: 100%; }
+.ig-dock-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.ig-dock-row .ig-button { max-width: 100%; }
+.ig-dock-pane--left .studio-explorer { position: relative; top: auto; right: auto; bottom: auto; z-index: auto;
+  width: 100%; max-height: none; height: auto; min-height: 250px; border: none; box-shadow: none;
+  border-radius: 0; overflow: visible; }
+.ig-dock-pane--left .studio-explorer-list { flex: none; overflow: visible; }
+.ig-dock-pane--left .studio-explorer-header { min-height: 46px; }
+.ig-dock-pane--left .studio-explorer-summary { gap: 6px; }
+.ig-dock-pane--left .scan-panel { height: auto; max-height: none; margin: 0; border: 0; border-radius: 0; padding: 12px; }
+.ig-dock-pane--left .scan-panel-controls { align-items: stretch; flex-direction: column; gap: 10px; }
+.ig-dock-pane--left .scan-panel-controls label, .ig-dock-pane--left .scan-panel-controls input:not([type=checkbox]),
+.ig-dock-pane--left .scan-panel-controls select { width: 100%; max-width: 100%; }
+.ig-dock-pane--left .scan-panel-controls label.scan-approval { max-width: none; }
+.ig-dock-pane--left .scan-panel-heading { display: flex; flex-direction: column; gap: 7px; }
+.ig-dock-pane--left .scan-feed { max-height: none; }
+.ig-dock-pane--right .topology-inspector { width: 100%; max-width: none; min-height: 100%; height: auto;
+  border: 0; background: var(--ig-surface); }
+.ig-dock-pane--right .access-form { margin: 0; border-radius: 0; padding: 12px; min-height: 0; }
+.ig-dock-pane--right .access-form label { min-width: 0; }
+.ig-dock-pane--right .access-form input { max-width: 100%; min-width: 0; }
+.ig-dock-pane--right .access-table-wrapper { overflow-x: auto; max-width: 100%; }
+.ig-dock-pane--right .section-heading { flex-wrap: wrap; }
+.ig-dock-activity { display: flex; flex-direction: column; min-height: 100%; padding: 10px 16px; gap: 8px; font-size: 11px; }
+.ig-dock-metrics { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.ig-dock-metrics > span { display: flex; align-items: center; gap: 7px; border: 1px solid var(--ig-border);
+  background: var(--ig-surface-raised); border-radius: 5px; padding: 5px 9px; }
+.ig-dock-metrics strong { color: var(--ig-brand); font: 700 13px var(--ig-font-mono); }
+.ig-dock-activity .topology-note { padding: 5px 8px; background: transparent; border: 0;
+  border-inline-start: 2px solid var(--ig-border-strong); line-height: 1.8; font-size: 11px; }
+.ig-dock-activity .topology-note--error { border-inline-start-color: var(--ig-danger); }
+.ig-dock-incident { display: flex; align-items: center; gap: 9px; color: var(--ig-warning); }
+.ig-dock-legend { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; color: var(--ig-text-subtle); margin-top: auto; }
+.ig-dock-legend > span { display: inline-flex; align-items: center; gap: 5px; }
+.ig-dock-pane--bottom .studio-dock { display: flex; flex-direction: column; flex: 1; min-height: 0;
+  height: 100%; border: 0; border-radius: 0; overflow: hidden; }
+.ig-dock-pane--bottom .studio-dock-header { display: none; }
+.ig-dock-pane--bottom .studio-dock-content { overflow: auto; }
+.ig-dock-frame--compact .ig-dock-center { position: absolute; inset: 0; }
+.ig-compact-dock { position: absolute; z-index: 16; background: var(--ig-surface);
+  box-shadow: 0 6px 35px #0006; min-width: 0; overflow: hidden; }
+.ig-compact-dock--left { left: 0; top: 0; bottom: 0; width: min(315px, 88vw); }
+.ig-compact-dock--right { right: 0; top: 0; bottom: 0; width: min(345px, 90vw); }
+.ig-compact-dock--bottom { left: 0; right: 0; bottom: 0; height: min(290px, 48vh); }
+.ig-compact-dock .ig-dock-pane { height: 100%; }
+.topology-page--studio .studio-appbar-actions > .studio-action-trigger { flex-shrink: 0; }
+@media (max-width: 980px) {
+  .topology-page--studio .studio-appbar-actions { gap: 2px; }
+  .topology-page--studio .studio-appbar-actions > .ig-button { padding-inline: 5px; }
+}
+@media (max-width: 620px) {
+  .topology-page--studio .studio-workspace-label, .topology-page--studio .studio-identity > span,
+  .topology-page--studio .studio-appbar-actions > .ig-badge { display: none; }
+  .topology-page--studio .studio-identity h1 { font-size: 12px; }
+  .topology-page--studio .studio-appbar-actions { overflow: auto; max-width: 62vw; }
+}
+/* IDE-style auto-hide rails remain visible in every collapsed state. */
+.ig-dock-rail { width:100%; height:100%; min-width:0; min-height:0;
+  display:flex; align-items:stretch; background:var(--ig-surface-raised);
+  border:0; overflow:auto; scrollbar-width:none; }
+.ig-dock-rail::-webkit-scrollbar {display:none}
+.ig-dock-rail--left,.ig-dock-rail--right { flex-direction:column; align-items:center; gap:4px; padding:7px 3px; }
+.ig-dock-rail--left {border-inline-start:1px solid var(--ig-border)}
+.ig-dock-rail--right {border-inline-end:1px solid var(--ig-border)}
+.ig-dock-rail button {border:0; background:transparent; color:var(--ig-text-muted);
+  font-size:11px; font-weight:650; line-height:1.4; border-radius:5px;
+  cursor:pointer; transition:background .12s,color .12s}
+.ig-dock-rail--left button,.ig-dock-rail--right button {display:flex;align-items:center;
+  justify-content:flex-start;writing-mode:vertical-rl; text-orientation:mixed;
+  min-height:70px; min-width:32px; padding:9px 5px; }
+.ig-dock-rail button[aria-current="true"] {color:var(--ig-brand);background:var(--ig-brand-soft)}
+.ig-dock-rail button:hover,.ig-dock-rail button:focus-visible {color:var(--ig-text);background:var(--ig-surface-hover)}
+.ig-dock-rail--bottom { flex-direction:row; align-items:center; gap:5px; padding:3px 11px;
+  border-top:1px solid var(--ig-border); direction:rtl; }
+.ig-dock-rail--bottom button {height:30px; padding:4px 11px; white-space:nowrap; }
+.ig-dock-pane--right .ig-dock-scroll { direction:rtl; }
+.ig-dock-pane--left .ig-dock-scroll { direction:rtl; }
+.ig-dock-pane--bottom .ig-dock-scroll { direction:rtl; }
+.ig-dock-pane .studio-dock, .ig-dock-pane .studio-explorer {direction:rtl}
+.ig-dock-frame--compact > .ig-dock-rail {position:absolute;z-index:12;}
+.ig-dock-frame--compact > .ig-dock-rail--left {inset:0 auto 38px 0;width:37px;height:auto;}
+.ig-dock-frame--compact > .ig-dock-rail--right {inset:0 0 38px auto;width:37px;height:auto;}
+.ig-dock-frame--compact > .ig-dock-rail--bottom {inset:auto 0 0 0;width:auto;height:38px;}
+.ig-dock-frame--compact .ig-compact-dock--left {left:37px;bottom:38px;width:min(315px,calc(100vw - 74px));}
+.ig-dock-frame--compact .ig-compact-dock--right {right:37px;bottom:38px;width:min(345px,calc(100vw - 74px));}
+.ig-dock-frame--compact .ig-compact-dock--bottom {bottom:38px;left:37px;right:37px;height:min(310px,48vh);}
+@media (max-width:580px) {
+  .ig-dock-rail--left button,.ig-dock-rail--right button {min-height:58px; min-width:30px; font-size:10px}
+  .ig-dock-rail--bottom button {font-size:10px; padding-inline:7px}
+}
+/* ADR-0027: IDE tool-window chrome. The three rotated rails remain visible even while a pane is open. */
+.ig-ide-workspace { display:flex; flex-direction:column; position:relative; isolation:isolate; }
+.ig-ide-upper { display:flex; flex:1 1 auto; min-width:0; min-height:0; overflow:hidden; }
+.ig-ide-main { flex:1 1 auto; min-height:0; min-width:0; height:100%; overflow:hidden; }
+.ig-ide-workspace > .ig-ide-upper > .ig-dock-rail--left,
+.ig-ide-workspace > .ig-ide-upper > .ig-dock-rail--right {
+  position:relative; inset:auto; width:42px; min-width:42px; max-width:42px; height:100%; flex:0 0 42px;
+  flex-direction:column; align-items:center; gap:4px; padding:8px 4px;
+  background:var(--ig-surface-raised); z-index:5; border:0;
+}
+.ig-ide-workspace > .ig-ide-upper > .ig-dock-rail--left { border-right:1px solid var(--ig-border); }
+.ig-ide-workspace > .ig-ide-upper > .ig-dock-rail--right { border-left:1px solid var(--ig-border); }
+.ig-ide-workspace > .ig-dock-rail--bottom {
+  position:relative; inset:auto; width:100%; height:39px; min-height:39px; flex:0 0 39px;
+  display:flex;align-items:center;justify-content:flex-start;direction:rtl;flex-direction:row;gap:5px;
+  padding:3px 13px;background:var(--ig-surface-raised); border-top:1px solid var(--ig-border); z-index:6;
+}
+.ig-ide-workspace .ig-dock-rail--left button,
+.ig-ide-workspace .ig-dock-rail--right button{
+  writing-mode:vertical-rl; text-orientation:mixed; font-family:Vazirmatn,sans-serif;
+  transform:none; min-height:72px; width:32px; padding:9px 5px;
+  border-inline-start:2px solid transparent; font-size:10px; letter-spacing:0; line-height:1.4;
+}
+.ig-ide-workspace .ig-dock-rail button[aria-pressed="true"] {
+  color:var(--ig-brand);background:var(--ig-brand-soft);border-inline-start-color:var(--ig-brand);
+}
+.ig-ide-workspace .ig-dock-rail--bottom button{
+  min-height:30px; padding:4px 12px; font-size:10px; border-bottom:2px solid transparent;
+}
+.ig-ide-workspace .ig-dock-rail--bottom button[aria-pressed="true"]{border-bottom-color:var(--ig-brand)}
+.ig-ide-workspace .ig-dock-pane { min-width:0; max-width:100%; overflow:hidden; }
+.ig-ide-workspace .ig-dock-scroll {min-width:0;max-width:100%; overflow-x:hidden;overflow-y:auto;}
+.ig-ide-workspace .ig-dock-pane--right .ig-dock-scroll:has(.access-form--topology){
+  display:block; overflow-x:hidden; overflow-y:auto;
+}
+/* Old topology forms were absolutely positioned over the SVG. Scope a full containment fix to tool windows. */
+.ig-ide-workspace .ig-dock-pane .access-form--topology {
+  position:static; inset:auto; top:auto;right:auto;z-index:auto;
+  display:flex;flex-direction:column;align-items:stretch; flex-wrap:nowrap;
+  gap:14px; width:100%;min-width:0;max-width:100%;height:auto;
+  margin:0;padding:14px; border:0;border-radius:0;
+  color:var(--ig-text); background:transparent; box-shadow:none;
+  font-size:12px;line-height:1.75;
+}
+.ig-ide-workspace .access-form--topology > * {min-width:0;max-width:100%;flex:0 0 auto;overflow-wrap:anywhere;}
+.ig-ide-workspace .access-form--topology > label,
+.ig-ide-workspace .access-form--topology label {
+  display:flex;flex-direction:column;align-items:stretch; gap:6px;
+  width:100%;min-width:0; max-width:100%;flex:0 0 auto; font-size:11px;line-height:1.7;
+}
+.ig-ide-workspace .access-form--topology input:not([type=checkbox]),
+.ig-ide-workspace .access-form--topology select,
+.ig-ide-workspace .access-form--topology textarea {
+  box-sizing:border-box;display:block;width:100%;max-width:100%;min-width:0; min-height:35px;
+  font-size:11px;padding:6px 8px;border:1px solid var(--ig-border-strong);
+  background:var(--ig-canvas);color:var(--ig-text);
+}
+.ig-ide-workspace .access-form--topology input[type=file] {font-size:10px;direction:ltr;cursor:pointer;}
+.ig-ide-workspace .access-form--topology .section-heading {padding:0 0 12px;gap:10px;align-items:flex-start;}
+.ig-ide-workspace .access-form--topology .section-heading h2 {font-size:13px;line-height:1.5;}
+.ig-ide-workspace .access-form--topology .section-heading p {font-size:11px;line-height:1.7;}
+.ig-ide-workspace .access-form--topology .section-heading button {flex-shrink:0;}
+.ig-ide-workspace .access-form--topology button{
+  width:auto;max-width:100%;min-height:33px; padding:6px 10px;
+  border:1px solid var(--ig-border);border-radius:5px;
+  font-size:11px;color:var(--ig-text);background:var(--ig-surface-raised);
+}
+.ig-ide-workspace .access-form--topology button:hover:not(:disabled) {background:var(--ig-brand-soft);color:var(--ig-brand);}
+.ig-ide-workspace .access-form--topology button[type=submit] {background:var(--ig-brand);color:#fff;}
+.ig-ide-workspace .access-form--topology .access-table-wrapper {
+  width:100%;min-width:0;max-width:100%; overflow-x:auto;overflow-y:auto;
+  border:1px solid var(--ig-border);border-radius:6px;scrollbar-width:thin;
+}
+.ig-ide-workspace .access-form--topology .access-table {width:max-content;min-width:100%;font-size:10px;}
+.ig-ide-workspace .access-form--topology .access-table th,
+.ig-ide-workspace .access-form--topology .access-table td{
+  padding:8px 9px;white-space:nowrap;
+}
+.ig-ide-workspace .access-form--topology .access-pagination {
+  width:100%;display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:8px 0;
+  justify-content:flex-start;font-size:10px;
+}
+.ig-ide-workspace .ig-dock-pane--left .studio-explorer {
+  position:static;inset:auto;width:100%;max-width:100%;min-height:0;
+  height:auto;display:flex;flex-direction:column;box-shadow:none;border:0;
+  background:transparent;
+}
+.ig-ide-workspace .ig-dock-pane--left .studio-explorer-list {overflow:visible;min-height:0;}
+.ig-ide-workspace .ig-dock-pane--left .studio-explorer-item {max-width:100%;overflow:hidden;}
+.ig-ide-workspace .ig-dock-pane--left .studio-explorer-ip {font-size:9px;}
+.ig-ide-workspace .ig-dock-pane--left .studio-explorer-item small {max-width:125px;}
+.ig-ide-workspace .ig-dock-pane--right .topology-inspector {
+  position:static;inset:auto;max-width:100%;width:100%;min-height:0;height:auto;
+}
+.ig-ide-workspace .ig-dock-pane--bottom .studio-dock{width:100%;max-width:100%;min-width:0;}
+.ig-ide-workspace .ig-dock-activity{width:100%;max-width:100%;}
+/* Tablet keeps persistent tabs on every edge. The pane is an overlay inside the rails. */
+.ig-ide-workspace.ig-dock-frame--compact .ig-ide-upper>.ig-dock-rail--left,
+.ig-ide-workspace.ig-dock-frame--compact .ig-ide-upper>.ig-dock-rail--right{
+  position:relative;inset:auto;width:37px;max-width:37px;min-width:37px;flex-basis:37px;z-index:12;
+}
+.ig-ide-workspace.ig-dock-frame--compact>.ig-dock-rail--bottom{
+  position:relative;inset:auto;width:100%;height:38px;min-height:38px;z-index:12;
+}
+.ig-ide-workspace.ig-dock-frame--compact .ig-compact-dock--left{
+  position:absolute;top:0;left:37px;right:auto;bottom:38px;
+  width:min(340px,calc(100vw - 74px));height:auto;
+}
+.ig-ide-workspace.ig-dock-frame--compact .ig-compact-dock--right{
+  position:absolute;top:0;right:37px;left:auto;bottom:38px;
+  width:min(380px,calc(100vw - 74px));height:auto;
+}
+.ig-ide-workspace.ig-dock-frame--compact .ig-compact-dock--bottom{
+  position:absolute;left:37px;right:37px;bottom:38px;top:auto;
+  width:auto;height:min(315px,47vh);
+}
+@media (min-width:1200px){
+  .ig-ide-workspace .ig-dock-pane--right .access-form--topology{padding:13px;}
+}
+@media (max-width:580px){
+  .ig-ide-workspace .ig-dock-rail--left button,.ig-ide-workspace .ig-dock-rail--right button{font-size:10px;}
+  .ig-ide-workspace .ig-dock-rail--bottom button{padding:4px 8px;}
+}
+/* ADR-0028: one navigation surface per region, RTL bottom tools aligned to the right. */
+.ig-ide-workspace .ig-dock-titlebar { direction:rtl; min-height:37px; padding-inline:12px; }
+.ig-ide-workspace .ig-dock-titlebar strong { color:var(--ig-text); font-size:12px; }
+.ig-ide-workspace .ig-dock-titlebar-name { font-size:10px; opacity:0.7; font-family:Vazirmatn,sans-serif; }
+.ig-ide-workspace > .ig-dock-rail--bottom { justify-content:flex-start; direction:rtl; }
+.ig-ide-workspace > .ig-dock-rail--bottom button { flex:0 0 auto; }
+.ig-ide-workspace .ig-dock-rail button[aria-pressed="true"] { font-weight:750; }
+.ig-ide-workspace .ig-dock-rail button:focus-visible,
+.ig-ide-workspace .ig-dock-close:focus-visible { outline:2px solid var(--ig-focus); outline-offset:-2px; }
+.ig-ide-workspace .ig-dock-pane--bottom .studio-dock-content { min-width:0; flex:1; overflow:auto; }
+.ig-ide-workspace .ig-dock-pane--bottom .studio-dock { flex:1 1 auto; }
+.ig-ide-workspace .ig-dock-pane--bottom .studio-probe-actions,
+.ig-ide-workspace .ig-dock-pane--bottom .studio-path-controls { direction:rtl; }
+@media (prefers-reduced-motion:reduce){
+  .ig-ide-workspace .ig-dock-rail button { transition:none; }
+}

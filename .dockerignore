@@ -1,0 +1,19 @@
+**/bin/
+**/obj/
+**/node_modules/
+**/dist/
+**/TestResults/
+**/coverage/
+.git/
+.vs/
+.vscode/
+.env
+.env.*
+infra/local/_publish/
+resources/sample-data/.local/
+research/experiments/.local/
+# Never send local TLS keys or pilot bootstrap files into Docker build context.
+infra/local/secrets/
+infra/local/.env
+infra/local/.env.*
+infra/local/host-scopes.json

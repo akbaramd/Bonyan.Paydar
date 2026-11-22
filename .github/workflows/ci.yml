@@ -1,0 +1,81 @@
+name: Paydar CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.4xx'
+      - name: Restore locked dependencies
+        run: dotnet restore InfraGraph.sln --locked-mode --verbosity quiet
+      - name: Build
+        run: dotnet build InfraGraph.sln --no-restore -m:1 -p:UseSharedCompilation=false --configuration Release
+      - name: Unit, contract and HTTP integration tests
+        run: dotnet test InfraGraph.sln --no-restore --no-build -m:1 --configuration Release --logger trx
+      - name: Project boundaries
+        shell: pwsh
+        run: ./scripts/check-project-boundaries.ps1
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/web/infragraph-admin
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: src/web/infragraph-admin/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - name: Design-token drift + frontend dependency boundaries
+        run: npm run tokens:check && npm run architecture:check
+      - name: TypeScript, React and accessible UI tests
+        run: npm run test
+      - name: Code lint
+        run: npm run lint
+      - name: Production Vite build
+        run: npm run build
+
+  frontend-e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.4xx'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: src/web/infragraph-admin/package-lock.json
+      - name: Restore and build ControlPlane + dependencies
+        run: |
+          dotnet restore InfraGraph.sln --locked-mode
+          dotnet build InfraGraph.sln --no-restore -m:1 -p:UseSharedCompilation=false
+      - name: Install browser-test dependencies
+        working-directory: src/web/infragraph-admin
+        run: |
+          npm ci --no-audit --no-fund
+          npx playwright install --with-deps chromium
+      - name: Real-browser desktop, tablet and axe accessibility tests
+        working-directory: src/web/infragraph-admin
+        run: npm run test:e2e
+      - name: Upload browser failures
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: src/web/infragraph-admin/test-results/
+          retention-days: 7
+

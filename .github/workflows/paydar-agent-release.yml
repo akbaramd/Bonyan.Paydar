@@ -18,7 +18,7 @@ jobs:
           dotnet-version: '10.0.4xx'
       - name: Build the Windows service, tray and installer
         shell: pwsh
-        run: ./scripts/build-paydar-agent.ps1 -Version ${{ github.ref_name }}
+        run: ./scripts/build-paydar-agent.ps1 -Version "${{ github.ref_name }}"
       - name: Upload preview artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -32,4 +32,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create ${{ github.ref_name }} artifacts/Paydar-Agent-*.exe artifacts/Paydar-Agent-*.zip --repo "${{ github.repository }}" --title "Paydar Agent ${{ github.ref_name }}" --prerelease --notes "Unsigned preview for authorized internal pilots only. Requires approved gateway client certificate. Automatic updates are disabled."
+          $tag = $env:GITHUB_REF_NAME
+          $files = @(Get-ChildItem artifacts -File | Where-Object { $_.Name -like 'Paydar-Agent-*.exe' -or $_.Name -like 'Paydar-Agent-*.zip' })
+          if ($files.Count -ne 2) { throw 'Expected two release artifacts' }
+          gh release create $tag $files[0].FullName $files[1].FullName --repo $env:GITHUB_REPOSITORY --title "Paydar Agent $tag" --prerelease --notes "Unsigned preview for authorized internal pilots only. Requires preapproved gateway client certificate. Automatic updates are disabled."

@@ -12,6 +12,7 @@ dotnet publish (Join-Path $root 'src\agents\Paydar.Agent.Tray\Paydar.Agent.Tray.
 if ($LASTEXITCODE -ne 0) { throw 'Tray publish failed' }
 Copy-Item (Join-Path $root 'deploy\agent\Install-PaydarAgent.ps1') $dest
 Copy-Item (Join-Path $root 'deploy\agent\Uninstall-PaydarAgent.ps1') $dest
+Copy-Item (Join-Path $root 'deploy\agent\Install-PaydarAgentBootstrap.ps1') $dest
 if (Test-Path $payload) { Remove-Item $payload -Force }
 Compress-Archive -Path (Join-Path $dest '*') -DestinationPath $payload -CompressionLevel Optimal
 $setupDest = Join-Path $root 'artifacts\setup'

@@ -41,6 +41,30 @@ public static class InventoryEndpoints
                 .Distinct(StringComparer.Ordinal).OrderBy(x => x, StringComparer.Ordinal).Take(500).ToArray() });
         }).RequireAuthorization();
 
+        // One-Agent details for a helpdesk operator. Cross-site IDs remain hidden.
+        app.MapGet("/api/v1/agents/{id:guid}/inventory", async (Guid id,
+            ClaimsPrincipal user, InfraGraphDbContext db, TimeProvider clock, CancellationToken ct) =>
+        {
+            var row = await db.AgentInventories.AsNoTracking().SingleOrDefaultAsync(
+                x => x.AgentId == id, ct);
+            if (row is null || !CanReadSite(user, row.SiteId)) return Results.NotFound();
+            AgentInventoryV1? inventory;
+            try {
+                inventory = JsonSerializer.Deserialize<AgentInventoryV1>(
+                    row.Snapshot, new JsonSerializerOptions(JsonSerializerDefaults.Web));
+            }
+            catch (JsonException) {
+                return Results.Problem("Stored inventory is unreadable.", statusCode: 500);
+            }
+            if (inventory is null) return Results.Problem("Stored inventory is empty.", statusCode: 500);
+            return Results.Ok(new {
+                row.AgentId, row.SiteId, inventory, row.CollectedAtUtc, row.ReceivedAtUtc,
+                evidenceStatus = row.ReceivedAtUtc >= clock.GetUtcNow().AddMinutes(-15)
+                    ? "recent" : "stale",
+                provenance = "agent-self-reported"
+            });
+        }).RequireAuthorization();
+
         app.MapGet("/api/v1/agents/inventory", async (string siteId, ClaimsPrincipal user,
             InfraGraphDbContext db, TimeProvider clock, CancellationToken ct) =>
         {

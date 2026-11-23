@@ -7,6 +7,7 @@ import { getJson } from '../../../shared/api/http'
 import { useSession } from '../../../shared/auth/session'
 import { getAgents, getAgentCapabilities } from '../api/agents'
 import AgentApprovalForm from './AgentApprovalForm'
+import AgentInventoryDetails from './AgentInventoryDetails'
 
 const sitesSchema = z.object({ sites: z.array(z.string()) })
 
@@ -14,6 +15,7 @@ export default function AgentsPage() {
   const session = useSession()
   const [selectedSite, setSelectedSite] = useState('')
   const [page, setPage] = useState(1)
+  const [selectedAgent, setSelectedAgent] = useState<string | null>(null)
   const sites = useQuery({
     queryKey: ['sites'], queryFn: ({ signal }) => getJson('/api/v1/sites', sitesSchema, signal),
     enabled: session.data?.role === 'admin', retry: false,
@@ -52,7 +54,7 @@ export default function AgentsPage() {
         <p>فقط رکوردهای سایت مجاز از PostgreSQL نمایش داده می‌شوند.</p></div></div>
       {session.data?.role === 'admin' && <div className="access-form"><label>محدودهٔ مدیریتی
         <select aria-label="سایت Agentها" value={siteId}
-          onChange={event => { setSelectedSite(event.target.value); setPage(1) }}>
+          onChange={event => { setSelectedSite(event.target.value); setPage(1); setSelectedAgent(null) }}>
           {!siteId && <option value="">انتخاب سایت موجود</option>}
           {sites.data?.sites.map(site => <option key={site} value={site}>{site}</option>)}
         </select>
@@ -65,7 +67,8 @@ export default function AgentsPage() {
           <thead><tr><th>شناسه Agent</th><th>سایت</th><th>نسخه</th>
             <th>آخرین دریافت ثبت‌شده</th><th>ارزیابی</th></tr></thead>
           <tbody>{agents.data.items.map(agent => <tr key={agent.agentId}>
-            <td dir="ltr">{agent.agentId}</td><td>{agent.siteId}</td>
+            <td dir="ltr"><Button type="button" variant="ghost" size="sm"
+              onClick={() => setSelectedAgent(agent.agentId)}>{agent.agentId}</Button></td><td>{agent.siteId}</td>
             <td dir="ltr">{agent.agentVersion}</td>
             <td>{agent.lastReceivedAtUtc
               ? new Date(agent.lastReceivedAtUtc).toLocaleString('fa-IR')
@@ -76,6 +79,7 @@ export default function AgentsPage() {
           </tr>)}</tbody>
         </table></div>
         {agents.data.total === 0 && <p>Agent ثبت‌شده‌ای برای این سایت وجود ندارد.</p>}
+        {selectedAgent && <AgentInventoryDetails agentId={selectedAgent} onClose={() => setSelectedAgent(null)} />}
         <div className="access-pagination">
           <span>صفحه {agents.data.page} · مجموع {agents.data.total.toLocaleString('fa-IR')}</span>
           <Button size="sm" variant="secondary" disabled={page <= 1}

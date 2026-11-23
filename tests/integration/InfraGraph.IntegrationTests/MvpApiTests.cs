@@ -894,6 +894,14 @@ public sealed class MvpApiTests
         var inventory = await viewer.GetFromJsonAsync<JsonElement>("/api/v1/agents/inventory?siteId=alpha");
         var row = Assert.Single(inventory.GetProperty("items").EnumerateArray());
         Assert.Equal("FINANCE-PC-01", row.GetProperty("inventory").GetProperty("hostName").GetString());
+        var detail = await viewer.GetFromJsonAsync<JsonElement>(
+            $"/api/v1/agents/{agentId}/inventory");
+        Assert.Equal(agentId, detail.GetProperty("agentId").GetGuid());
+        Assert.Equal(16L * 1024 * 1024 * 1024,
+            detail.GetProperty("inventory").GetProperty("ramTotalBytes").GetInt64());
+        Assert.Equal(HttpStatusCode.NotFound,
+            (await outsider.GetAsync($"/api/v1/agents/{agentId}/inventory")).StatusCode);
+
 
         var graph = await viewer.GetFromJsonAsync<JsonElement>("/api/v1/topology/graph?siteId=alpha");
         var node = Assert.Single(graph.GetProperty("nodes").EnumerateArray());

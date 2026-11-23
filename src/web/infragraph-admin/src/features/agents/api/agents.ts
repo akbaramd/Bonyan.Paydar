@@ -47,3 +47,39 @@ export async function approveAgent(body: ApprovalRequest): Promise<void> {
   })
   if (!response.ok) throw new HttpError(response.status, path)
 }
+export const agentInventoryDetailSchema = z.object({
+  agentId: z.string().uuid(),
+  siteId: z.string(),
+  receivedAtUtc: z.string(),
+  collectedAtUtc: z.string(),
+  evidenceStatus: z.enum(['recent', 'stale']),
+  provenance: z.literal('agent-self-reported'),
+  inventory: z.object({
+    agentId: z.string().uuid(),
+    installationEpoch: z.string().uuid(),
+    hostName: z.string(),
+    osVersion: z.string(),
+    agentVersion: z.string(),
+    cpuName: z.string(),
+    logicalProcessors: z.number().int(),
+    ramTotalBytes: z.number().nonnegative(),
+    gpus: z.array(z.object({ name: z.string(), driverVersion: z.string().nullable() })),
+    disks: z.array(z.object({
+      name: z.string(), totalBytes: z.number().nonnegative(),
+      freeBytes: z.number().nonnegative(), fileSystem: z.string().nullable(),
+    })),
+    networks: z.array(z.object({
+      name: z.string(), macAddress: z.string().nullable(),
+      ipAddresses: z.array(z.string()), status: z.string(),
+    })),
+    devices: z.array(z.object({
+      name: z.string(), deviceClass: z.string().nullable(), instanceId: z.string().nullable(),
+    })),
+    collectedAtUtc: z.string(),
+  }),
+})
+
+export function getAgentInventory(agentId: string, signal?: AbortSignal) {
+  return getJson(`/api/v1/agents/${encodeURIComponent(agentId)}/inventory`,
+    agentInventoryDetailSchema, signal)
+}

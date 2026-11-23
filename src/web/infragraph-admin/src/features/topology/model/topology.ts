@@ -11,6 +11,8 @@ export type Device = {
   controlPlane?: boolean
   role?: 'collector'
   state: DeviceState
+  /** Agent heartbeat is independent of reachability and Windows hardware health. */
+  agent?: { id: string; status: 'recent' | 'stale' | 'revoked'; lastSeenAtUtc: string; version: string | null }
   address: string
   site: string
   vendor: string

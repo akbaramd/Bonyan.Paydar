@@ -135,4 +135,64 @@ describe('reported topology API mapping', () => {
       ...graph, links: [{ ...baseLink, corroboration: 'cable-confirmed' }],
     }).success).toBe(false)
   })
+
+  it('renders an authenticated Windows Agent as one identifiable computer with telemetry status', () => {
+    const received = '2026-11-23T13:35:46Z'
+    const mapped = toTopologyDataset(graphSchema.parse({
+      ...graph,
+      provenance: 'agent-self-reported-evidence',
+      nodes: [{
+        id: '192.168.88.47', depth: 0, address: '192.168.88.47',
+        systemName: 'LAB-PC-01', deviceKind: 'workstation',
+        identitySource: 'agent-self-reported-ip',
+        agentId: '77777777-7777-4777-8777-777777777777',
+        agentLastSeenAtUtc: received, agentVersion: '0.2-preview',
+        agentStatus: 'recent', tcpPorts: [], learnedMacCount: 0,
+      }],
+      links: [],
+    }))
+    expect(mapped.origin).toBe('live')
+    expect(mapped.devices).toHaveLength(1)
+    expect(mapped.nodes).toHaveLength(1)
+    expect(mapped.edges).toHaveLength(0)
+    expect(mapped.devices[0]).toMatchObject({
+      name: 'LAB-PC-01', kind: 'workstation', state: 'unknown',
+      address: '192.168.88.47',
+      agent: {
+        id: '77777777-7777-4777-8777-777777777777',
+        status: 'recent', lastSeenAtUtc: received,
+      },
+    })
+    expect(mapped.devices[0].title).toContain('Agent')
+    expect(mapped.devices[0].evidence).toContain('گواهی')
+  })
+
+  it('keeps stale and revoked Agent telemetry distinct from probed host availability', () => {
+    for (const status of ['stale', 'revoked'] as const) {
+      const mapped = toTopologyDataset(graphSchema.parse({
+        ...graph, provenance: 'agent-self-reported-evidence',
+        nodes: [{
+          id: '10.20.30.5', depth: 0, address: '10.20.30.5',
+          deviceKind: 'workstation', probeStatus: 'responsive',
+          identitySource: 'agent-self-reported-ip',
+          agentId: 'faccf1ce-c6ad-4246-a6b0-dd82ca3e7c03',
+          agentLastSeenAtUtc: '2026-11-22T10:00:00Z',
+          agentStatus: status,
+        }], links: [],
+      }))
+      expect(mapped.devices[0].agent?.status).toBe(status)
+      expect(mapped.devices[0].state).toBe('unknown')
+    }
+  })
+
+  it('degrades unknown future device kinds safely instead of crashing the entire graph', () => {
+    const result = graphSchema.parse({
+      ...graph, nodes: [{
+        id: '10.1.1.8', depth: 0, deviceKind: 'printer-from-new-driver',
+        identitySource: 'unrecognized-later-protocol',
+      }], links: [],
+    })
+    expect(toTopologyDataset(result).devices[0].kind).toBe('unknown')
+    expect(toTopologyDataset(result).devices[0].agent).toBeUndefined()
+  })
 })

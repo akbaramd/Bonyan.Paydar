@@ -467,6 +467,7 @@ export default function TopologyPage() {
     {bottomTab === 'activity' && <div className="ig-dock-activity">
       <div className="ig-dock-metrics">
         <span>نودها <strong>{counts.total}</strong></span>
+        <span data-testid="topology-agent-count">دارای Agent <strong>{dataset.devices.filter(d => d.agent).length}</strong></span>
         <span>لینک‌های مستند <strong>{dataset.edges.filter(e => !e.data?.logicalMembership).length}</strong></span>
         <span>نیازمند بررسی <strong>{counts.warning + counts.critical}</strong></span>
         <span>نامشخص <strong>{counts.unknown}</strong></span>
@@ -482,7 +483,7 @@ export default function TopologyPage() {
       </p> : null}
       {previewGraph && <p className="topology-note" role="status">پیش‌نمایش آفلاین شواهد؛ هیچ اسکن جدیدی انجام نشده است.
         <Button size="sm" variant="ghost" onClick={() => setWalkPreview(null)}>بازگشت به گراف کامل</Button></p>}
-      {graph.isError && <p role="alert" className="topology-note topology-note--error">دریافت گراف از API ناموفق بود.</p>}
+      {graph.isError && <p role="alert" className="topology-note topology-note--error">دریافت یا اعتبارسنجی داده‌های نقشه ناموفق بود. <Button size="sm" variant="secondary" onClick={() => void graph.refetch()}>تلاش مجدد</Button></p>}
       {displayedGraph?.truncated && <p className="topology-note">گراف ناقص است؛ سقف ایمن داده رسیده است.</p>}
       {displayedGraph && displayedGraph.staleObservations > 0 && <p className="topology-note">{displayedGraph.staleObservations} مشاهده منقضی کنار گذاشته شد.</p>}
       {displayedGraph?.links.some(l => l.possibleCycle) && <p className="topology-note">چرخهٔ احتمالی؛ Loop فعال یا اشکال STP تأیید نشده است.</p>}
@@ -501,6 +502,8 @@ export default function TopologyPage() {
         <span><i className="summary-dot summary-dot--warning"/>هشدار</span>
         <span><i className="summary-dot summary-dot--critical"/>قطع</span>
         <span><i className="summary-dot summary-dot--unknown"/>نامشخص</span>
+        <span><i className="summary-dot summary-dot--healthy"/>Agent: گزارش اخیر</span>
+        <span><i className="summary-dot summary-dot--warning"/>Agent: داده قدیمی</span>
         <span>موقعیت نودها صرفاً نمایش گراف است، نه نقشهٔ فیزیکی.</span>
       </div>
     </div>}
@@ -521,7 +524,7 @@ export default function TopologyPage() {
       <div className="studio-appbar-heading">
         <Link className="studio-exit" to="/monitoring/discovery" aria-label="بازگشت به Discovery" title="بازگشت به فهرست نودهای کشف‌شده"><ArrowRight size={18}/></Link>
         <span className="studio-brandmark"><Network size={20}/></span>
-        <div className="studio-identity"><h1>توپولوژی شبکه</h1><span>INFRAGRAPH / NETWORK OPERATIONS STUDIO</span></div>
+        <div className="studio-identity"><h1>توپولوژی شبکه</h1><span>PAYDAR / NETWORK OPERATIONS STUDIO</span></div>
         <span className="studio-appbar-divider"/>
         <span className="studio-workspace-label">مرکز بررسی و فرماندهی شبکه</span>
       </div>
@@ -563,7 +566,7 @@ export default function TopologyPage() {
     </section>
     <footer className="studio-footer">
       <span><span className="summary-dot summary-dot--unknown"/> {demo ? 'سناریوی آزمایشی · بدون ارسال بسته واقعی' : dataset.origin === 'reported' ? 'شواهد گزارش‌شده · وضعیت تجهیزات نامشخص' : 'کشف فعال IP · شواهد اتصال لایه ۲ مستقل است'}</span>
-      <span>INFRAGRAPH STUDIO <span className="numeric">/ v1.7</span></span>
+      <span>PAYDAR STUDIO <span className="numeric">/ pilot</span></span>
     </footer>
     <Dialog.Root open={isTablet && selectedDevice !== null} onOpenChange={(open) => { if (!open) setSelectedId(null) }}>
       <Dialog.Portal>

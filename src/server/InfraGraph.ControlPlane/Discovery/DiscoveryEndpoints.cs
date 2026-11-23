@@ -71,29 +71,48 @@ public static class DiscoveryEndpoints
             if (scanned.Length > 1024)
                 return Results.Problem("Scan host cap exceeded.", statusCode: 422);
             var agentRows = await db.AgentInventories.AsNoTracking()
-                .Where(x => x.SiteId == siteId).OrderByDescending(x => x.ReceivedAtUtc)
-                .Take(513).Select(x => new { x.AgentId, x.Snapshot, x.ReceivedAtUtc })
-                .ToArrayAsync(ct);
+                .Join(db.AgentInstallations.AsNoTracking().Where(x => x.SiteId == siteId),
+                    inventory => inventory.AgentId, installation => installation.AgentId,
+                    (inventory, installation) => new {
+                        inventory.AgentId, inventory.Snapshot, inventory.ReceivedAtUtc,
+                        installation.AgentVersion, installation.RevokedAtUtc
+                    })
+                .OrderByDescending(x => x.ReceivedAtUtc).Take(513).ToArrayAsync(ct);
             if (agentRows.Length > 512)
                 return Results.Problem("Agent observation cap exceeded.", statusCode: 422);
-            // Agent-reported IP addresses identify nodes, but never assert physical links.
-            var endpointByIp = new Dictionary<string, (Guid AgentId, string HostName, DateTimeOffset ReceivedAtUtc)>(StringComparer.Ordinal);
+            // One canonical node per installed Agent (not one per virtual/VPN interface).
+            // Prefer an IP already observed in site discovery; otherwise an active physical
+            // network adapter. Agent-reported IP is identity evidence, never cable topology.
+            var endpointByIp = new Dictionary<string, (Guid AgentId, string HostName, DateTimeOffset ReceivedAtUtc, string AgentVersion, bool Revoked)>(StringComparer.Ordinal);
             var ambiguousIp = new HashSet<string>(StringComparer.Ordinal);
+            var scannedAddresses = scanned.Select(x => x.Address).ToHashSet(StringComparer.Ordinal);
             foreach (var row in agentRows)
             {
                 AgentInventoryV1? report = null;
                 try { report = JsonSerializer.Deserialize<AgentInventoryV1>(row.Snapshot,
                     new JsonSerializerOptions(JsonSerializerDefaults.Web)); }
                 catch (JsonException) { /* Corrupt row cannot create an asserted topology identity. */ }
-                if (report is null) continue;
-                foreach (var ip in report.Networks.SelectMany(n => n.IpAddresses).Distinct(StringComparer.Ordinal))
-                {
-                    if (!IPAddress.TryParse(ip, out var parsed) ||
-                        parsed.AddressFamily != AddressFamily.InterNetwork ||
-                        IPAddress.IsLoopback(parsed) || ambiguousIp.Contains(ip)) continue;
-                    if (endpointByIp.ContainsKey(ip)) { endpointByIp.Remove(ip); ambiguousIp.Add(ip); continue; }
-                    endpointByIp.Add(ip, (row.AgentId, report.HostName, row.ReceivedAtUtc));
+                if (report?.Networks is null) continue;
+                var preferredIp = report.Networks
+                    .Where(n => n.IpAddresses is not null)
+                    .SelectMany(n => n.IpAddresses.Select(ip => new { Ip = ip, Network = n }))
+                    .Where(x => IPAddress.TryParse(x.Ip, out var parsed) &&
+                        parsed.AddressFamily == AddressFamily.InterNetwork &&
+                        !IPAddress.IsLoopback(parsed) && !x.Ip.StartsWith("169.254.", StringComparison.Ordinal) &&
+                        !x.Ip.StartsWith("0.", StringComparison.Ordinal))
+                    .OrderByDescending(x => scannedAddresses.Contains(x.Ip))
+                    .ThenByDescending(x => x.Network.Status == "Up")
+                    .ThenByDescending(x => x.Network.Name.Equals("Ethernet", StringComparison.OrdinalIgnoreCase))
+                    .ThenBy(x => x.Ip, StringComparer.Ordinal)
+                    .Select(x => x.Ip).FirstOrDefault();
+                if (preferredIp is null || ambiguousIp.Contains(preferredIp)) continue;
+                if (endpointByIp.ContainsKey(preferredIp)) {
+                    endpointByIp.Remove(preferredIp);
+                    ambiguousIp.Add(preferredIp); // Duplicate IP cannot establish device identity.
+                    continue;
                 }
+                endpointByIp.Add(preferredIp, (row.AgentId, report.HostName, row.ReceivedAtUtc,
+                    row.AgentVersion, row.RevokedAtUtc is not null));
             }
             var jobScopes = await db.NetworkScanJobs.AsNoTracking()
                 .Where(x => x.SiteId == siteId)
@@ -143,7 +162,7 @@ public static class DiscoveryEndpoints
                     var hasAgent = endpointByIp.TryGetValue(x.Id, out var endpoint);
                     return new {
                         x.Id, x.Depth,
-                        address = host?.Address ?? managed?.Address,
+                        address = host?.Address ?? managed?.Address ?? (hasAgent ? x.Id : null),
                         systemName = managed?.SystemName ?? observed?.SystemName ??
                             (hasAgent ? endpoint.HostName : null),
                         systemDescription = managed?.SystemDescription,
@@ -157,6 +176,10 @@ public static class DiscoveryEndpoints
                             hasAgent ? "agent-self-reported-ip" : null,
                         agentId = hasAgent ? endpoint.AgentId : (Guid?)null,
                         agentLastSeenAtUtc = hasAgent ? endpoint.ReceivedAtUtc : (DateTimeOffset?)null,
+                        agentVersion = hasAgent ? endpoint.AgentVersion : null,
+                        agentStatus = !hasAgent ? null : endpoint.Revoked ? "revoked" :
+                            endpoint.ReceivedAtUtc >= now.AddMinutes(-15) &&
+                            endpoint.ReceivedAtUtc <= now.AddMinutes(2) ? "recent" : "stale",
                         probeStatus = host is null ? null : ProbeHealth.EffectiveStatus(
                             host.Status, host.LastJobId, activeScan?.Id,
                             host.LastProbedAtUtc, now, activeScan?.IntervalSeconds ?? 0),
@@ -182,7 +205,8 @@ public static class DiscoveryEndpoints
             return Results.Ok(new { graph.SiteId, nodes, links, logicalSegments,
                 graph.StaleObservations, graph.Truncated, graph.GeneratedAtUtc,
                 provenance = freshManaged.Count > 0 ? "snmpv3-and-active-ipv4-evidence" :
-                    scanned.Length > 0 ? "active-ipv4-and-reported-evidence"
+                    scanned.Length > 0 ? "active-ipv4-and-reported-evidence" :
+                    endpointByIp.Count > 0 ? "agent-self-reported-evidence"
                         : "operator-reported-unverified" });
         }).RequireAuthorization();
 

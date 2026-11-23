@@ -909,6 +909,10 @@ public sealed class MvpApiTests
         Assert.Equal("workstation", node.GetProperty("deviceKind").GetString());
         Assert.Equal("agent-self-reported-ip", node.GetProperty("identitySource").GetString());
         Assert.Equal(agentId, node.GetProperty("agentId").GetGuid());
+        Assert.Equal("10.4.5.31", node.GetProperty("address").GetString());
+        Assert.Equal("recent", node.GetProperty("agentStatus").GetString());
+        Assert.Equal("0.1-preview", node.GetProperty("agentVersion").GetString());
+        Assert.Equal("agent-self-reported-evidence", graph.GetProperty("provenance").GetString());
         Assert.Empty(graph.GetProperty("links").EnumerateArray());
     }
 

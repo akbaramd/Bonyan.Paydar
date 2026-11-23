@@ -7,6 +7,7 @@ import { stateLabels } from '../model/topology'
 import { DeviceGlyph } from './DeviceGlyph'
 import { kindNames } from '../model/device-labels'
 import './inspector-links.css'
+import { AgentInspectorStatus } from './AgentInspectorStatus'
 
 export type InspectedLink = {
   id: string
@@ -45,6 +46,7 @@ export function NodeInspector({ device, connections, links = [], possibleDepende
       <div className="inspector-status-row">
         <Badge tone={tones[device.state]}>{stateLabels[device.state]} · {demo ? 'نمونه آزمایشی' : 'بر اساس شواهد موجود'}</Badge>
       </div>
+      {device.agent && !demo && <AgentInspectorStatus agent={device.agent}/>}
       {possibleDependents > 0 && <div className="inspector-hypothesis" data-testid="inspector-impact-hypothesis">
         <div><AlertTriangle size={17}/><strong>فرضیه اختلال مشترک · نیازمند تأیید</strong></div>
         <p>این سوئیچ در نمونه آموزشی بحرانی است و {possibleDependents} دستگاه پایین‌دست وضعیت «نامشخص» دارند. ممکن است علت، سوئیچ، لینک بالادستی یا اختلال در سیستم جمع‌آوری داده باشد. وضعیت نامشخص به معنی قطع قطعی رایانه‌ها نیست.</p>

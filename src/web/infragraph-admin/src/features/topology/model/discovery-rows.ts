@@ -4,8 +4,9 @@ export type DiscoveryRow = {
   id: string
   address: string
   name: string
-  deviceKind: 'router' | 'switch' | 'unknown'
-  source: 'snmpv3-authpriv' | 'lldp-remote' | 'active-ipv4'
+  deviceKind: 'router' | 'switch' | 'workstation' | 'server' | 'unknown'
+  source: 'snmpv3-authpriv' | 'lldp-remote' | 'agent-self-reported-ip' | 'active-ipv4'
+  agentStatus: 'recent' | 'stale' | 'revoked' | null
   probeStatus: 'responsive' | 'suspect' | 'unresponsive' | 'stale' | 'not-monitored'
   icmpResponded: boolean | null
   ports: readonly number[]
@@ -30,10 +31,11 @@ export function discoveryRows(graph: GraphResponse): DiscoveryRow[] {
     name: node.systemName ?? node.address ?? node.id,
     deviceKind: node.deviceKind ?? 'unknown',
     source: node.identitySource ?? 'active-ipv4',
+    agentStatus: node.agentStatus ?? null,
     probeStatus: node.probeStatus ?? 'not-monitored',
     icmpResponded: node.icmpResponded ?? null,
     ports: node.tcpPorts ?? [],
-    lastSeenAtUtc: node.lastSeenAtUtc ?? null,
+    lastSeenAtUtc: node.agentLastSeenAtUtc ?? node.lastSeenAtUtc ?? null,
     snmpObservedAtUtc: node.snmpObservedAtUtc ?? null,
     learnedMacCount: node.learnedMacCount ?? 0,
   })).sort((a, b) => a.address.localeCompare(b.address, undefined, { numeric: true }))

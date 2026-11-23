@@ -11,10 +11,14 @@ export const graphSchema = z.object({
     systemName: z.string().nullable().optional(),
     systemDescription: z.string().nullable().optional(),
     systemObjectId: z.string().nullable().optional(),
-    deviceKind: z.enum(['unknown', 'router', 'switch']).optional(),
+    deviceKind: z.enum(['unknown', 'router', 'switch', 'workstation', 'server']).optional().catch('unknown'),
     snmpObservedAtUtc: z.string().nullable().optional(),
     learnedMacCount: z.number().int().nonnegative().optional(),
-    identitySource: z.enum(['snmpv3-authpriv', 'lldp-remote']).nullable().optional(),
+    identitySource: z.enum(['snmpv3-authpriv', 'lldp-remote', 'agent-self-reported-ip']).nullable().optional().catch(null),
+    agentId: z.string().uuid().nullable().optional(),
+    agentStatus: z.enum(['recent', 'stale', 'revoked']).nullable().optional(),
+    agentLastSeenAtUtc: z.string().nullable().optional(),
+    agentVersion: z.string().nullable().optional(),
     probeStatus: z.enum(['responsive', 'suspect', 'unresponsive', 'stale']).nullable().optional(),
     consecutiveMisses: z.number().int().nonnegative().nullable().optional(),
     icmpResponded: z.boolean().nullable().optional(),
@@ -34,7 +38,7 @@ export const graphSchema = z.object({
     corroboration: z.enum(['reciprocal', 'single-sided', 'unresolved', 'ambiguous-port']).nullable().optional(),
   })).max(10000),
   staleObservations: z.number().int(), truncated: z.boolean(),
-  generatedAtUtc: z.string(), provenance: z.enum(['operator-reported-unverified', 'active-ipv4-and-reported-evidence', 'snmpv3-and-active-ipv4-evidence']),
+  generatedAtUtc: z.string(), provenance: z.enum(['operator-reported-unverified', 'active-ipv4-and-reported-evidence', 'snmpv3-and-active-ipv4-evidence', 'agent-self-reported-evidence']),
 })
 export type GraphResponse = z.infer<typeof graphSchema>
 export async function getGraph(siteId: string, signal?: AbortSignal) {
@@ -43,22 +47,29 @@ export async function getGraph(siteId: string, signal?: AbortSignal) {
 export function toTopologyDataset(graph: GraphResponse): TopologyDataset {
   const discoveredDevices: Device[] = graph.nodes.map((item) => {
     const probed = Boolean(item.probeStatus)
+    const agent = item.agentId && item.agentStatus && item.agentLastSeenAtUtc
+      ? { id: item.agentId, status: item.agentStatus, lastSeenAtUtc: item.agentLastSeenAtUtc, version: item.agentVersion ?? null }
+      : undefined
     const latest = item.lastSeenAtUtc ? new Date(item.lastSeenAtUtc).toLocaleString('fa-IR') : 'نامشخص'
     return {
       id: item.id, name: item.systemName ?? item.id,
-      title: item.identitySource === 'snmpv3-authpriv'
+      title: agent ? 'کامپیوتر دارای پایدار Agent؛ آخرین ارتباط مستقل از وضعیت سلامت سیستم' : item.identitySource === 'snmpv3-authpriv'
         ? 'تجهیز شناسایی‌شده با SNMPv3 خواندنی؛ نوع بر اساس شواهد پروتکلی'
         : item.identitySource === 'lldp-remote'
           ? 'همسایهٔ گزارش‌شده با LLDP؛ آدرس IP و نوع هنوز تأیید نشده'
           : probed ? 'میزبان IP کشف‌شده؛ نوع دستگاه نامشخص' : 'تجهیز با نوع نامشخص',
       kind: item.deviceKind === 'switch' ? 'switch' :
-        item.deviceKind === 'router' ? 'router' : 'unknown',
+        item.deviceKind === 'router' ? 'router' :
+        agent ? 'workstation' : item.deviceKind === 'server' ? 'server' : 'unknown',
       state: item.probeStatus === 'unresponsive' || item.probeStatus === 'suspect'
         ? 'warning' : 'unknown',
-      address: item.address ?? 'نامشخص', site: graph.siteId,
+      address: item.address ?? item.id, site: graph.siteId,
+      agent,
       vendor: item.systemObjectId ?? 'نامشخص',
       port: item.tcpPorts?.join(', ') || 'نامشخص',
-      description: item.identitySource
+      description: agent
+        ? `اطلاعات دستگاه توسط پایدار Agent گزارش شده است. آخرین دریافت: ${new Date(agent.lastSeenAtUtc).toLocaleString('fa-IR')}. وضعیت Agent: ${agent.status === 'recent' ? 'داده اخیر' : agent.status === 'revoked' ? 'لغوشده' : 'داده قدیمی'}. وضعیت سخت‌افزار و سلامت شبکه مستقل از اتصال Agent است.`
+        : item.identitySource
         ? `${item.systemDescription ?? 'اطلاعات مدل در دسترس نیست'}. آخرین مشاهده SNMP: ${item.snmpObservedAtUtc
           ? new Date(item.snmpObservedAtUtc).toLocaleString('fa-IR') : 'نامشخص'}.
           MACهای یادگرفته‌شده در FDB: ${item.learnedMacCount ?? 0} (نه لزوماً متصل مستقیم).`
@@ -68,7 +79,8 @@ export function toTopologyDataset(graph: GraphResponse): TopologyDataset {
           : item.probeStatus === 'stale' ? 'پایش این میزبان فعال نیست یا داده قدیمی است'
           : 'دو پیمایش متوالی بدون پاسخ؛ قطعی دستگاه اثبات نشده است'}.`
         : 'وجود این همسایه فقط بر اساس گزارش واردشده است؛ هنوز از شبکه تأیید نشده است.',
-      evidence: item.identitySource === 'snmpv3-authpriv'
+      evidence: agent ? 'Inventory و IP گزارش‌شده از Agent تأییدشده با گواهی کلاینت؛ ارتباط فیزیکی یا سلامت دستگاه از این داده نتیجه نمی‌شود'
+        : item.identitySource === 'snmpv3-authpriv'
         ? 'SNMPv3 authPriv (SHA-256/AES) و LLDP؛ جدول MAC صرفاً شاهد یادگیری پورت است'
         : item.identitySource === 'lldp-remote'
           ? 'LLDP همسایه از تجهیز مدیریت‌شده؛ هنوز SNMPv3 مستقیم از این نود خوانده نشده'

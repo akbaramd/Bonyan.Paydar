@@ -18,12 +18,13 @@ import './discovery.css'
 type StatusChoice = 'all' | DiscoveryRow['probeStatus']
 type KindChoice = 'all' | DiscoveryRow['deviceKind']
 const kindLabels: Record<DiscoveryRow['deviceKind'], string> = {
-  router: 'روتر', switch: 'سوئیچ', unknown: 'نامشخص',
+  router: 'روتر', switch: 'سوئیچ', workstation: 'رایانه دارای Agent', server: 'سرور', unknown: 'نامشخص',
 }
 const sourceLabels: Record<DiscoveryRow['source'], string> = {
   'snmpv3-authpriv': 'SNMPv3',
   'lldp-remote': 'LLDP · همسایه',
   'active-ipv4': 'IPv4 · ICMP/TCP',
+  'agent-self-reported-ip': 'پایدار Agent · گزارش دستگاه',
 }
 
 function formatObserved(value: string | null) {
@@ -48,6 +49,11 @@ const columns: ColumnDef<DiscoveryRow>[] = [
       <span aria-hidden="true" className="discovery-health-dot"/>
       {discoveryStatusLabels[ctx.row.original.probeStatus]}
     </span> },
+  { id: 'agentStatus', header: 'وضعیت Agent', size: 175,
+    accessorFn: row => row.agentStatus ?? '',
+    cell: ctx => ctx.row.original.agentStatus === 'recent' ? 'گزارش اخیر' :
+      ctx.row.original.agentStatus === 'stale' ? 'داده قدیمی' :
+        ctx.row.original.agentStatus === 'revoked' ? 'گواهی لغوشده' : 'بدون Agent' },
   { accessorKey: 'source', header: 'منبع شناسایی', size: 170,
     cell: ctx => <span className="discovery-source">{sourceLabels[ctx.row.original.source]}</span> },
   { id: 'icmpResponded', header: 'ICMP', size: 95,
@@ -58,7 +64,7 @@ const columns: ColumnDef<DiscoveryRow>[] = [
     accessorFn: row => row.ports.join(', '),
     cell: ctx => <code className="discovery-ports" dir="ltr">{ctx.row.original.ports.length ?
       ctx.row.original.ports.join(', ') : '—'}</code> },
-  { id: 'lastSeenAtUtc', header: 'آخرین پاسخ مثبت', size: 220,
+  { id: 'lastSeenAtUtc', header: 'آخرین مشاهده', size: 220,
     accessorFn: row => row.lastSeenAtUtc || '',
     cell: ctx => <time dir="ltr">{formatObserved(ctx.row.original.lastSeenAtUtc)}</time> },
   { id: 'map', header: 'نقشه', size: 135, enableSorting: false, enableHiding: false,
@@ -97,7 +103,7 @@ export default function DiscoveryPage() {
     <div className="page-heading discovery-heading">
       <div>
         <h1><Radar size={25} aria-hidden="true"/> کشف تجهیزات شبکه</h1>
-        <p>فهرست نودهای شناسایی‌شده از پایش IPv4 و شواهد SNMPv3/LLDP؛ این فهرست نقشهٔ کابل‌ها یا اثبات سلامت تجهیزات نیست.</p>
+        <p>فهرست نودها از پایش IPv4، شواهد SNMPv3/LLDP و گزارش Agent. دریافت Inventory به معنی سلامت دستگاه یا تأیید لینک فیزیکی نیست.</p>
       </div>
       <div className="discovery-heading-actions">
         <Button variant="secondary" size="sm" disabled={!site || graph.isFetching} onClick={() => void graph.refetch()}>
@@ -146,7 +152,7 @@ export default function DiscoveryPage() {
         <label className="field">نوع تجهیز
           <select aria-label="فیلتر نوع تجهیز" value={kind} onChange={e => setKind(e.target.value as KindChoice)}>
             <option value="all">همه انواع</option><option value="router">روتر</option>
-            <option value="switch">سوئیچ</option><option value="unknown">نامشخص</option>
+            <option value="switch">سوئیچ</option><option value="workstation">رایانه</option><option value="server">سرور</option><option value="unknown">نامشخص</option>
           </select>
         </label>
         <span className="discovery-result-count">{filteredRows.length.toLocaleString('fa-IR')} نتیجه</span>

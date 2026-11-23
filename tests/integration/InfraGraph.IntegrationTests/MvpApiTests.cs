@@ -802,6 +802,108 @@ public sealed class MvpApiTests
         Assert.Equal(1, link.GetProperty("evidenceIds").GetArrayLength());
     }
 
+    [Fact]
+    public async Task OnlyAdministratorCanApproveAndRevokeAnAgentCertificate()
+    {
+        using var host = new TestHost();
+        await host.AddUser(Admin, InitialPassword, "admin");
+        await host.AddUser("operator@example.invalid", UserPassword, "operator", "alpha");
+        using var admin = host.HttpsClient();
+        using var op = host.HttpsClient();
+        await Login(admin, Admin, InitialPassword);
+        await Login(op, "operator@example.invalid", UserPassword);
+        var id = Guid.NewGuid();
+        var epoch = Guid.NewGuid();
+        var certificateThumbprint = new string('A', 40);
+        var req = new { agentId = id, installationEpoch = epoch, siteId = "alpha",
+            clientCertificateThumbprint = certificateThumbprint };
+        Assert.Equal(HttpStatusCode.Forbidden,
+            (await Post(op, "/api/v1/admin/agents/approve", req)).StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest,
+            (await admin.PostAsJsonAsync("/api/v1/admin/agents/approve", req)).StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest,
+            (await Post(admin, "/api/v1/admin/agents/approve", new {
+                agentId = id, installationEpoch = epoch, siteId = "alpha",
+                clientCertificateThumbprint = "not-a-certificate" })).StatusCode);
+        var approved = await Post(admin, "/api/v1/admin/agents/approve", req);
+        Assert.Equal(HttpStatusCode.Created, approved.StatusCode);
+        Assert.Equal(HttpStatusCode.Conflict,
+            (await Post(admin, "/api/v1/admin/agents/approve", req)).StatusCode);
+        await using (var scope = host.Services.CreateAsyncScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<InfraGraphDbContext>();
+            var registered = await db.AgentInstallations.SingleAsync(x => x.AgentId == id);
+            Assert.Equal(epoch, registered.InstallationEpoch);
+            Assert.Equal("alpha", registered.SiteId);
+            Assert.Equal(certificateThumbprint, registered.ClientCertificateThumbprint);
+            Assert.Single(await db.OperatorAudit.Where(x => x.Action == "agent.approve").ToListAsync());
+        }
+        Assert.Equal(HttpStatusCode.Forbidden,
+            (await Post(op, $"/api/v1/admin/agents/{id}/revoke", new { })).StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent,
+            (await Post(admin, $"/api/v1/admin/agents/{id}/revoke", new { })).StatusCode);
+        await using (var scope = host.Services.CreateAsyncScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<InfraGraphDbContext>();
+            Assert.NotNull((await db.AgentInstallations.SingleAsync(x => x.AgentId == id)).RevokedAtUtc);
+        }
+    }
+
+    [Fact]
+    public async Task AgentReportedIpAppearsAsProvisionalNodeWithoutInventingPhysicalLink()
+    {
+        using var host = new TestHost();
+        await host.AddUser("viewer@example.invalid", UserPassword, "viewer", "alpha");
+        await host.AddUser("outsider@example.invalid", UserPassword, "viewer", "beta");
+        var agentId = Guid.NewGuid();
+        var epoch = Guid.NewGuid();
+        var collectedAt = DateTimeOffset.UtcNow.AddSeconds(-3);
+        var report = new InfraGraph.Contracts.Agents.AgentInventoryV1(
+            agentId, epoch, "FINANCE-PC-01", "Windows 11", "0.1-preview", "Intel CPU", 8,
+            16L * 1024 * 1024 * 1024,
+            Array.Empty<InfraGraph.Contracts.Agents.GpuInfoV1>(),
+            Array.Empty<InfraGraph.Contracts.Agents.DiskInfoV1>(),
+            new[] { new InfraGraph.Contracts.Agents.NetworkInfoV1("Ethernet",
+                "AABBCCDDEEFF", new[] { "10.4.5.31" }, "Up") },
+            Array.Empty<InfraGraph.Contracts.Agents.PnpDeviceInfoV1>(),
+            collectedAt);
+        await using (var scope = host.Services.CreateAsyncScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<InfraGraphDbContext>();
+            db.AgentInstallations.Add(new AgentInstallationRecord {
+                AgentId = agentId, InstallationEpoch = epoch, SiteId = "alpha",
+                AgentVersion = "0.1-preview", LastReceivedAtUtc = DateTimeOffset.UtcNow,
+                LastInventoryAtUtc = collectedAt,
+                ClientCertificateThumbprint = new string('B', 40)
+            });
+            db.AgentInventories.Add(new AgentInventoryRecord {
+                AgentId = agentId, SiteId = "alpha",
+                Snapshot = JsonSerializer.Serialize(report, new JsonSerializerOptions(JsonSerializerDefaults.Web)),
+                CollectedAtUtc = collectedAt, ReceivedAtUtc = DateTimeOffset.UtcNow
+            });
+            await db.SaveChangesAsync();
+        }
+
+        using var viewer = host.HttpsClient();
+        using var outsider = host.HttpsClient();
+        await Login(viewer, "viewer@example.invalid", UserPassword);
+        await Login(outsider, "outsider@example.invalid", UserPassword);
+        Assert.Equal(HttpStatusCode.Forbidden,
+            (await outsider.GetAsync("/api/v1/agents/inventory?siteId=alpha")).StatusCode);
+
+        var inventory = await viewer.GetFromJsonAsync<JsonElement>("/api/v1/agents/inventory?siteId=alpha");
+        var row = Assert.Single(inventory.GetProperty("items").EnumerateArray());
+        Assert.Equal("FINANCE-PC-01", row.GetProperty("inventory").GetProperty("hostName").GetString());
+
+        var graph = await viewer.GetFromJsonAsync<JsonElement>("/api/v1/topology/graph?siteId=alpha");
+        var node = Assert.Single(graph.GetProperty("nodes").EnumerateArray());
+        Assert.Equal("10.4.5.31", node.GetProperty("id").GetString());
+        Assert.Equal("workstation", node.GetProperty("deviceKind").GetString());
+        Assert.Equal("agent-self-reported-ip", node.GetProperty("identitySource").GetString());
+        Assert.Equal(agentId, node.GetProperty("agentId").GetGuid());
+        Assert.Empty(graph.GetProperty("links").EnumerateArray());
+    }
+
     private static async Task<HttpResponseMessage> Login(HttpClient client, string email, string password) =>
         await Post(client, "/api/v1/auth/login", new { email, password });
 

@@ -19,7 +19,7 @@ public static class OperationsEndpoints
     public static void MapOperationsEndpoints(this WebApplication app)
     {
         app.MapGet("/api/v1/agents/capabilities", () => Results.Ok(new {
-            enrollmentEnabled = false, heartbeatVerified = false,
+            enrollmentEnabled = false, certificateApprovalEnabled = true, heartbeatVerified = false,
             signedUpdatesEnabled = false, status = "gateway-not-ready"
         })).RequireAuthorization();
 
@@ -32,9 +32,15 @@ public static class OperationsEndpoints
             var size = pageSize ?? 25;
             var query = db.AgentInstallations.AsNoTracking().Where(x => x.SiteId == siteId);
             var total = await query.CountAsync(ct);
+            var now = DateTimeOffset.UtcNow;
+            var recentAfter = now.AddMinutes(-15);
             var items = await query.OrderBy(x => x.AgentId)
                 .Skip((current - 1) * size).Take(size)
-                .Select(x => new { x.AgentId, x.SiteId, x.AgentVersion, x.LastReceivedAtUtc })
+                .Select(x => new { x.AgentId, x.SiteId, x.AgentVersion, x.LastReceivedAtUtc,
+                    x.LastInventoryAtUtc, x.RevokedAtUtc,
+                    evidenceStatus = x.RevokedAtUtc != null ? "revoked"
+                        : x.LastReceivedAtUtc == null ? "pending"
+                        : x.LastReceivedAtUtc >= recentAfter ? "recent" : "stale" })
                 .ToArrayAsync(ct);
             return Results.Ok(new { siteId, page = current, pageSize = size, total,
                 items, provenance = "registration-only-not-verified",

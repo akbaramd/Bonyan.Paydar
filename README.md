@@ -2,6 +2,8 @@
 
 On-prem IT command center for network discovery, endpoint inventory, temporal evidence-backed topology, monitoring, incident analysis and later AI assistance.
 
+**Agent pilot extension (2026-11-23):** Added administrator-approved device-certificate registration/revocation, a Gateway certificate-approval check endpoint, interactive tray connection verification, a readable site-scoped evidence status, retry-safe inventory reporting, local CSR/issued-certificate provisioning scripts, and provisional Agent IP nodes in topology. All of these remain **pilot functionality**, not validated production deployment. See [pilot runbook](docs/engineering/paydar-agent-pilot.md).
+
 **Agent preview (2026-11-22):** The Windows Service now collects read-only CPU, RAM, GPU, storage, network and PnP inventory, with a separate tray and an unsigned EXE installer. Secure mTLS ingestion and topology mapping have source implementations, but have not been validated against real client certificates or production PostgreSQL. Signed auto-update and unattended rollout are not implemented. See docs/engineering/paydar-agent-pilot.md.
 
 **Status:** .NET/React **solution scaffold implemented and locally verified**. Real network probing has been piloted; secured Agent enrollment, field mTLS checks and full hardware topology are **not yet accepted**. Approved architecture baseline: [v1.0](docs/architecture/architecture-baseline-v1.0.md).
@@ -55,4 +57,3 @@ Run the published DLL **from its publish directory** so ASP.NET Core finds `wwwr
 **Boundary:** No scanning or endpoint data collection is enabled in the scaffold. Agent Gateway endpoints intentionally return HTTP 503 until real mTLS enrollment, RBAC and PostgreSQL durable ingestion exist. Docker Engine and PostgreSQL live integration are not validated yet.
 
 Architecture changes use versioned ADRs; implementation-only details are documented, measured and tested rather than silently redesigning the platform.
-

@@ -16,9 +16,12 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.4xx'
+      - name: Verify .NET contracts, service and API
+        shell: pwsh
+        run: dotnet test InfraGraph.sln -c Release -m:1 -p:UseSharedCompilation=false
       - name: Build the Windows service, tray and installer
         shell: pwsh
-        run: ./scripts/build-paydar-agent.ps1 -Version "${{ github.ref_name }}"
+        run: ./scripts/build-paydar-agent.ps1 -Version ($env:GITHUB_REF_NAME -replace '^agent-v', '')
       - name: Upload preview artifacts
         uses: actions/upload-artifact@v4
         with:

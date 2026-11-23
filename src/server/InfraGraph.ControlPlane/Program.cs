@@ -132,6 +132,7 @@ app.MapNetworkScanEndpoints();
 app.MapNetworkDiagnosticEndpoints();
 app.MapInventoryEndpoints();
 app.MapOperationsEndpoints();
+app.MapAgentApprovalEndpoints();
 app.MapHub<StatusHub>("/hubs/status").RequireAuthorization();
 // Unknown API routes must never be served as index.html.
 app.Map("/api/{**path}", () => Results.NotFound());

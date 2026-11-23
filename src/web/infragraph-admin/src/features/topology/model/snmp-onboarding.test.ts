@@ -11,7 +11,7 @@ describe('read-only MikroTik onboarding preview', () => {
     startedAtUtc: '2026-11-21T09:50:00Z', lastSweepAtUtc: '2026-11-21T09:59:00Z',
   }]
   it('only considers a host within an approved canonical private CIDR', () => {
-    for (const address of ['192.168.88.1','192.168.201.22','192.168.90.34'])
+    for (const address of ['192.168.88.1','192.168.89.22','192.168.90.34'])
       expect(addressInApprovedCidr(address,'192.168.88.0/22')).toBe(true)
     for (const address of ['192.168.204.1','10.0.0.1','1.1.1.1','192.168.203.255'])
       expect(addressInApprovedCidr(address,'192.168.88.0/22')).toBe(false)
@@ -45,4 +45,3 @@ describe('read-only MikroTik onboarding preview', () => {
     expect(target).toEqual({targets:[{siteId:'lan',address:'192.168.88.34',approved:false}]})
   })
 })
-

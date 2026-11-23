@@ -1,7 +1,7 @@
-using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading.RateLimiting;
 using InfraGraph.Contracts.Agents;
+using InfraGraph.AgentGateway;
 using InfraGraph.Infrastructure.Persistence;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Mvc;
@@ -30,10 +30,34 @@ app.UseRateLimiter();
 app.MapHealthChecks("/health/live");
 app.MapGet("/health/ready", async (InfraGraphDbContext db, CancellationToken ct) => {
     if (string.IsNullOrWhiteSpace(connection)) return Results.StatusCode(503);
-    try { return await db.Database.CanConnectAsync(ct) ? Results.Ok(new { status = "ready" }) :
-        Results.StatusCode(503); }
+    try {
+        if (!await db.Database.CanConnectAsync(ct)) return Results.StatusCode(503);
+        // Verify that required tables, columns and runtime SELECT grants are usable.
+        await db.AgentInstallations.AsNoTracking().Select(x => new {
+            x.AgentId, x.ClientCertificateThumbprint, x.LastInventoryAtUtc
+        }).Take(1).ToArrayAsync(ct);
+        await db.AgentInventories.AsNoTracking().Select(x => new {
+            x.AgentId, x.Snapshot
+        }).Take(1).ToArrayAsync(ct);
+        return Results.Ok(new { status = "ready-for-approved-agents" });
+    }
     catch { return Results.StatusCode(503); }
 });
+
+// The tray checks exact per-device approval without sending hardware data.
+app.MapPost("/api/v1/agents/check", async (HttpContext ctx, AgentIdentityRequest body,
+    InfraGraphDbContext db, CancellationToken ct) =>
+{
+    if (!ctx.Request.IsHttps || string.IsNullOrWhiteSpace(connection))
+        return Results.StatusCode(StatusCodes.Status503ServiceUnavailable);
+    var device = await AgentIdentityVerifier.FindApprovedAsync(
+        ctx, body.AgentId, body.InstallationEpoch, db, ct);
+    if (device is null) return Results.Unauthorized();
+    return Results.Ok(new {
+        device.AgentId, device.SiteId, device.LastReceivedAtUtc,
+        approved = true, inventoryReceived = device.LastInventoryAtUtc is not null
+    });
+}).RequireRateLimiting("inventory").WithMetadata(new RequestSizeLimitAttribute(4096));
 
 // Legacy untrusted heartbeat remains closed until certificate enrollment is fully verified.
 app.MapPost("/api/v1/agents/heartbeat", () => Results.StatusCode(503));
@@ -42,30 +66,22 @@ app.MapPost("/api/v1/agents/inventory", async (HttpContext ctx, AgentInventoryV1
 {
     if (!ctx.Request.IsHttps || string.IsNullOrWhiteSpace(connection))
         return Results.StatusCode(StatusCodes.Status503ServiceUnavailable);
-    var cert = await ctx.Connection.GetClientCertificateAsync(ct);
-    if (cert is null || cert.NotBefore.ToUniversalTime() > DateTime.UtcNow || cert.NotAfter.ToUniversalTime() <= DateTime.UtcNow)
-        return Results.Unauthorized();
+
     if (body.AgentId == Guid.Empty || body.InstallationEpoch == Guid.Empty ||
-        string.IsNullOrWhiteSpace(body.HostName) || body.HostName.Length > 240 || body.CpuName.Length > 256 ||
-        body.Disks.Count > 64 || body.Gpus.Count > 32 || body.Networks.Count > 64 ||
+        string.IsNullOrWhiteSpace(body.HostName) || body.HostName.Length > 240 ||
+        string.IsNullOrWhiteSpace(body.AgentVersion) || body.AgentVersion.Length > 64 ||
+        body.CpuName is null || body.CpuName.Length > 256 ||
+        body.Disks is null || body.Gpus is null || body.Networks is null ||
+        body.Devices is null || body.Disks.Count > 64 ||
+        body.Gpus.Count > 32 || body.Networks.Count > 64 ||
         body.Devices.Count > 500)
         return Results.BadRequest();
     var now = DateTimeOffset.UtcNow;
     if (body.CollectedAtUtc > now.AddMinutes(2) || body.CollectedAtUtc < now.AddMinutes(-20))
         return Results.BadRequest(new { error = "Stale observation" });
-    var device = await db.AgentInstallations.SingleOrDefaultAsync(x => x.AgentId == body.AgentId, ct);
-    if (device is null || device.InstallationEpoch != body.InstallationEpoch ||
-        device.RevokedAtUtc != null ||
-        string.IsNullOrWhiteSpace(device.ClientCertificateThumbprint))
-        return Results.Unauthorized();
-    var presented = cert.Thumbprint.Replace(" ", "", StringComparison.Ordinal);
-    var expected = device.ClientCertificateThumbprint.Replace(" ", "", StringComparison.Ordinal);
-    try {
-        if (!CryptographicOperations.FixedTimeEquals(Convert.FromHexString(presented),
-                                                       Convert.FromHexString(expected)))
-            return Results.Unauthorized();
-    }
-    catch (FormatException) { return Results.Unauthorized(); }
+    var device = await AgentIdentityVerifier.FindApprovedAsync(
+        ctx, body.AgentId, body.InstallationEpoch, db, ct);
+    if (device is null) return Results.Unauthorized();
     if (device.LastInventoryAtUtc is not null && device.LastInventoryAtUtc >= body.CollectedAtUtc)
         return Results.Conflict(new { error = "Replay or stale agent observation" });
     var record = await db.AgentInventories.SingleOrDefaultAsync(x => x.AgentId == body.AgentId, ct);
@@ -87,8 +103,10 @@ app.MapPost("/api/v1/agents/inventory", async (HttpContext ctx, AgentInventoryV1
     catch (DbUpdateConcurrencyException) {
         return Results.Conflict(new { error = "Concurrent agent observation" });
     }
+    catch (DbUpdateException) {
+        return Results.Conflict(new { error = "Conflicting or invalid agent observation" });
+    }
     return Results.Ok(new { accepted = true, receivedAtUtc = now });
 }).RequireRateLimiting("inventory").WithMetadata(new RequestSizeLimitAttribute(512_000));
 app.Run();
-
-
+public sealed record AgentIdentityRequest(Guid AgentId, Guid InstallationEpoch);

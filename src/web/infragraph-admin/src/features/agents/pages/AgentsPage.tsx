@@ -6,6 +6,7 @@ import { Button } from '../../../shared/ui/Button'
 import { getJson } from '../../../shared/api/http'
 import { useSession } from '../../../shared/auth/session'
 import { getAgents, getAgentCapabilities } from '../api/agents'
+import AgentApprovalForm from './AgentApprovalForm'
 
 const sitesSchema = z.object({ sites: z.array(z.string()) })
 
@@ -32,19 +33,20 @@ export default function AgentsPage() {
   })
 
   return <div className="page" dir="rtl">
-    <div className="page-eyebrow">AGENT REGISTRY / READ ONLY</div>
+    <div className="page-eyebrow">AGENT REGISTRY / INVENTORY</div>
     <div className="page-heading"><div>
       <h1>Agentها</h1>
-      <p>فهرست ثبت‌شدهٔ Agentها، نه وضعیت آنلاین بودن یا تأیید دریافت داده از دستگاه.</p>
-    </div><Badge tone="unknown">مانیتورینگ غیرفعال</Badge></div>
+      <p>فهرست Agentهای ثبت‌شده و آخرین گزارش واقعی دستگاه‌ها؛ وضعیت اخیر به معنی سلامت قطعی سیستم نیست.</p>
+    </div><Badge tone="unknown">نسخه آزمایشی</Badge></div>
     <section className="surface-card data-section">
       <div className="section-heading"><div>
         <h2>وضعیت اتصال AgentGateway</h2>
-        <p>اتصال امن با گواهی دستگاه و heartbeat هنوز فعال نشده است.</p>
+        <p>تأیید دستی گواهی دستگاه فعال است. دریافت Inventory نیازمند Gateway پیکربندی‌شده و گواهی معتبر است.</p>
       </div></div>
       {caps.isError && <p role="alert">دریافت قابلیت‌های Gateway از API ناموفق بود.</p>}
-      {caps.data && <p role="status">ثبت Agent: غیرفعال · heartbeat تأییدشده: غیرفعال · به‌روزرسانی امضاشده: غیرفعال</p>}
+      {caps.data && <p role="status">ثبت خودکار: غیرفعال · تأیید دستی: فعال · به‌روزرسانی امضاشده: غیرفعال</p>}
     </section>
+    {session.data?.role === 'admin' && <AgentApprovalForm />}
     <section className="surface-card data-section">
       <div className="section-heading"><div><h2>نصب‌های ثبت‌شده</h2>
         <p>فقط رکوردهای سایت مجاز از PostgreSQL نمایش داده می‌شوند.</p></div></div>
@@ -68,7 +70,9 @@ export default function AgentsPage() {
             <td>{agent.lastReceivedAtUtc
               ? new Date(agent.lastReceivedAtUtc).toLocaleString('fa-IR')
               : 'هیچ داده‌ای ثبت نشده'}</td>
-            <td>نامشخص · heartbeat تأیید نشده</td>
+            <td>{agent.evidenceStatus === "revoked" ? "گواهی لغو شده" :
+              agent.evidenceStatus === "recent" ? "گزارش اخیر دریافت شده" :
+                agent.evidenceStatus === "stale" ? "گزارش قدیمی" : "منتظر نخستین گزارش"}</td>
           </tr>)}</tbody>
         </table></div>
         {agents.data.total === 0 && <p>Agent ثبت‌شده‌ای برای این سایت وجود ندارد.</p>}
